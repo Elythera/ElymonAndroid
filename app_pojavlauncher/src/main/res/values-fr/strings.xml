@@ -335,8 +335,13 @@
     <string name="exception_failed_to_unpack_jre17">L\'installation de JRE 17 a échoué</string>
     <string name="newdl_starting">Lecture des métadonnées du jeu …</string>
     <string name="newdl_downloading_metadata">Téléchargement des métadonnées du jeu (%s)</string>
-    <string name="newdl_downloading_game_files">Téléchargement du jeu en cours… (%d/%d, %.2f MB/s)</string>
-    <string name="newdl_downloading_game_files_size">Téléchargement du jeu en cours… (%.2f/%.2f MB, %.2f MB/s)</string>
+    <!-- ELYMON: French units on the progress line of the first Play -->
+    <string name="newdl_downloading_game_files">Téléchargement du jeu en cours… (%d/%d, %.2f Mo/s)</string>
+    <string name="newdl_downloading_game_files_size">Téléchargement du jeu en cours… (%.2f/%.2f Mo, %.2f Mo/s)</string>
+    <!-- ELYMON: missing French for texts of the first Play (Java 21 download) and of the MobileGlues settings -->
+    <string name="newdl_downloading_jre_runtime">Téléchargement de Java %s (%.2f/%.2f Mo)</string>
+    <string name="multirt_no_internet">Échec du téléchargement, vérifie ta connexion Internet.</string>
+    <string name="error_invalid_value">Valeur invalide.</string>
     <string name="cropper_title">Sélectionnez une version de Forge</string>
     <string name="cropper_lock_vertical">Verrouillage vertical</string>
     <string name="cropper_lock_horizontal">Verrouillage horizontal</string>

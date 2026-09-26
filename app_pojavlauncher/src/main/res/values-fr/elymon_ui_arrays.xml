@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Elymon ui package: French for upstream arrays that are only in English
+     (values/headings_array.xml) and that Elymon still shows. -->
+<resources>
+    <!-- Réglages détaillés > Vidéo > MobileGlues > gestion des erreurs -->
+    <string-array name="mg_renderer_names_errorSetting">
+        <item>Automatique</item>
+        <item>Ne rien ignorer</item>
+        <item>Ignorer les erreurs de shader et de programme</item>
+        <item>Ignorer les erreurs de shader, de programme et de framebuffer</item>
+    </string-array>
+</resources>
