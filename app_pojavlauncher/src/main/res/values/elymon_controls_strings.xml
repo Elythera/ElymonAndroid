@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Elymon controls package: touch layout and its notices. French, in the default folder on purpose
+     (DESIGN.md): every locale, French included, uses these texts, so there is nothing to translate.
+     The button labels of the layout itself live in assets/default.json (tools/elymon/controls/make_layout.py). -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <!-- Shown once, over the controls, when a new Elymon layout was saved beside a layout the player edited. -->
+    <string name="elymon_controls_new_layout_title">Nouvelles commandes tactiles</string>
+    <!-- %1$s: file name such as elymon-2.json; %2$s, %3$s, %4$s: the names of the in-game menu entry
+         "Contrôles personnalisés" and of the editor's "Charger" and "Sélectionner la controlmap par défaut" -->
+    <string name="elymon_controls_new_layout_message">Elymon propose une nouvelle disposition des commandes tactiles. Comme tu as modifié la tienne, elle ne change pas : la nouvelle est enregistrée à côté, sous le nom %1$s.\n\nPour l\'essayer : en jeu, touche Pause puis Menu, choisis « %2$s », puis « %3$s » et %1$s. Pour la garder aux prochaines parties : « %4$s ».</string>
+    <string name="elymon_controls_ok">OK</string>
+</resources>
