@@ -75,15 +75,25 @@ public final class ElymonMicrophone {
      * {@code thenPlay} (after the system request when the player accepts).
      */
     public static void offerBeforePlay(@NonNull Activity activity, @NonNull Requester requester, @NonNull Runnable thenPlay) {
-        preferences(activity).edit().putBoolean(PREF_OFFERED, true).apply();
+        // "Offered" is saved only once the player answers: a rotation closes the dialog with
+        // the activity, and the next Play must show it again instead of skipping it for good.
         new AlertDialog.Builder(activity)
                 .setTitle(R.string.elymon_mic_prompt_title)
                 .setMessage(R.string.elymon_mic_prompt_message)
                 .setCancelable(false)
-                .setPositiveButton(R.string.elymon_mic_prompt_allow, (dialog, which) ->
-                        requester.requestMicrophonePermission(thenPlay))
-                .setNegativeButton(R.string.elymon_mic_prompt_later, (dialog, which) -> thenPlay.run())
+                .setPositiveButton(R.string.elymon_mic_prompt_allow, (dialog, which) -> {
+                    markOffered(activity);
+                    requester.requestMicrophonePermission(thenPlay);
+                })
+                .setNegativeButton(R.string.elymon_mic_prompt_later, (dialog, which) -> {
+                    markOffered(activity);
+                    thenPlay.run();
+                })
                 .show();
+    }
+
+    private static void markOffered(@NonNull Context context) {
+        preferences(context).edit().putBoolean(PREF_OFFERED, true).apply();
     }
 
     /** Android's page for this app, where a refused permission can still be given. */
