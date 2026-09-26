@@ -113,9 +113,35 @@ def elymonReadElytheraKey = {
     String line = keyFile.readLines('UTF-8')
             .collect { it.replace('﻿', '').trim() }
             .find { !it.isEmpty() && !it.startsWith('#') }
-    return [key: line, source: keyFile.path]
+    return [key: line, source: keyFile.path, file: keyFile]
 }
 def elymonKeyFound = elymonReadElytheraKey()
+
+// ELYMON: like prepare-key.cjs's assertKeyFileIsNotTracked, refuse a key file inside the
+// repository that `git add -A` would publish (tracked, or not ignored). The default
+// .elythera-key is in .gitignore; ELYTHERA_KEY_FILE may point anywhere.
+def elymonAssertKeyFileNotPublishable = { File keyFile ->
+    if (keyFile == null) return
+    String root = rootProject.rootDir.canonicalPath + File.separator
+    if (!keyFile.canonicalPath.startsWith(root)) return
+    Integer exit = null
+    try {
+        // Without --no-index, a tracked file is reported as not ignored (exit 1).
+        Process git = new ProcessBuilder('git', 'check-ignore', '-q', keyFile.canonicalPath)
+                .directory(rootProject.rootDir).redirectErrorStream(true).start()
+        git.inputStream.text
+        exit = git.waitFor()
+    } catch (Exception ignored) {
+    }
+    if (exit == 1) {
+        throw new GradleException("[elythera-key] le fichier de clé ${keyFile.path} est dans le dépôt " +
+                "et n'est pas ignoré par git (ou y est suivi) : un « git add -A » le publierait.\n" +
+                "  Ajoutez-le à .gitignore (et « git rm --cached » s'il est suivi), ou placez-le hors du dépôt.")
+    } else if (exit != 0) {
+        logger.warn("[elythera-key] ATTENTION : git n'a pas pu dire si ${keyFile.path} est ignoré ; " +
+                "vérifiez qu'il ne sera jamais commité.")
+    }
+}
 String elymonKeySource = elymonKeyFound.source
 String elymonKeyRaw = elymonKeyFound.key
 boolean elymonKeyPresent = elymonKeyRaw != null && (elymonKeyRaw ==~ /^[0-9a-fA-F]{64}$/)
@@ -126,6 +152,7 @@ String elymonKey = elymonKeyPresent ? elymonKeyRaw.toLowerCase(Locale.ROOT) : ''
 // same two as the desktop), fails a release build without a key unless
 // ELYMON_ALLOW_UNSIGNED=1, and only warns for debug builds.
 def elymonCheckKey = { boolean release ->
+    elymonAssertKeyFileNotPublishable(elymonKeyFound.file)
     if (elymonKeyInvalid) {
         int nonHex = elymonKeyRaw.replaceAll('[0-9a-fA-F]', '').length()
         throw new GradleException("[elythera-key] la clé lue depuis ${elymonKeySource} est invalide.\n" +
