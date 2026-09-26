@@ -65,6 +65,109 @@ def getCFApiKey = {
     return "DUMMY";
 }
 
+// ELYMON: everything below, up to "configurations", is Elymon build configuration:
+// version, release signing and ELYTHERA_KEY. No secret value is ever printed.
+
+def elymonLoadProperties = { File file ->
+    Properties properties = new Properties()
+    if (file.isFile()) file.withInputStream { properties.load(it) }
+    return properties
+}
+
+// ELYMON: versionCode and versionName come from elymon-version.properties at the repo root.
+def elymonVersion = elymonLoadProperties(rootProject.file('elymon-version.properties'))
+def elymonVersionCodeText = elymonVersion.getProperty('elymon.versionCode', '').trim()
+def elymonVersionName = elymonVersion.getProperty('elymon.versionName', '').trim()
+if (!(elymonVersionCodeText ==~ /^[1-9][0-9]{0,8}$/) || elymonVersionName.isEmpty()) {
+    throw new GradleException("elymon-version.properties doit définir elymon.versionCode (entier > 0) et elymon.versionName")
+}
+int elymonVersionCode = elymonVersionCodeText as int
+
+// ELYMON: release signing from the environment, or from the git-ignored
+// elymon-signing.properties at the repo root (same keys as the variables).
+// Without a usable keystore the release APK is simply left unsigned.
+def elymonSigningProperties = elymonLoadProperties(rootProject.file('elymon-signing.properties'))
+def elymonSigningValue = { String name ->
+    String value = System.getenv(name)
+    if (value == null || value.isEmpty()) value = elymonSigningProperties.getProperty(name)
+    return value == null ? '' : value
+}
+def elymonKeystorePath = elymonSigningValue('ELYMON_KEYSTORE_FILE').trim()
+File elymonKeystore = elymonKeystorePath.isEmpty() ? null : rootProject.file(elymonKeystorePath)
+def elymonStorePassword = elymonSigningValue('ELYMON_KEYSTORE_PASSWORD')
+def elymonKeyAlias = elymonSigningValue('ELYMON_KEY_ALIAS').trim()
+def elymonKeyPassword = elymonSigningValue('ELYMON_KEY_PASSWORD')
+if (elymonKeyPassword.isEmpty()) elymonKeyPassword = elymonStorePassword
+boolean elymonCanSign = elymonKeystore != null && elymonKeystore.isFile() &&
+        !elymonStorePassword.isEmpty() && !elymonKeyAlias.isEmpty()
+
+// ELYMON: ELYTHERA_KEY, read like the desktop's tools/prepare-key.cjs:
+// $ELYTHERA_KEY, else the file named by $ELYTHERA_KEY_FILE, else <repo root>/.elythera-key
+// (first line that is neither blank nor a # comment). Exactly 64 hex characters.
+def elymonReadElytheraKey = {
+    String fromEnv = (System.getenv('ELYTHERA_KEY') ?: '').trim()
+    if (!fromEnv.isEmpty()) return [key: fromEnv, source: '$ELYTHERA_KEY']
+    String keyFilePath = System.getenv('ELYTHERA_KEY_FILE')
+    File keyFile = keyFilePath ? rootProject.file(keyFilePath) : rootProject.file('.elythera-key')
+    if (!keyFile.isFile()) return [key: null, source: keyFile.path]
+    String line = keyFile.readLines('UTF-8')
+            .collect { it.replace('﻿', '').trim() }
+            .find { !it.isEmpty() && !it.startsWith('#') }
+    return [key: line, source: keyFile.path]
+}
+def elymonKeyFound = elymonReadElytheraKey()
+String elymonKeySource = elymonKeyFound.source
+String elymonKeyRaw = elymonKeyFound.key
+boolean elymonKeyPresent = elymonKeyRaw != null && (elymonKeyRaw ==~ /^[0-9a-fA-F]{64}$/)
+boolean elymonKeyInvalid = elymonKeyRaw != null && !elymonKeyPresent
+String elymonKey = elymonKeyPresent ? elymonKeyRaw.toLowerCase(Locale.ROOT) : ''
+
+// ELYMON: runs before every build. Prints only truncated fingerprints of the key (the
+// same two as the desktop), fails a release build without a key unless
+// ELYMON_ALLOW_UNSIGNED=1, and only warns for debug builds.
+def elymonCheckKey = { boolean release ->
+    if (elymonKeyInvalid) {
+        int nonHex = elymonKeyRaw.replaceAll('[0-9a-fA-F]', '').length()
+        throw new GradleException("[elythera-key] la clé lue depuis ${elymonKeySource} est invalide.\n" +
+                "  Attendu : exactement 64 caractères hexadécimaux (openssl rand -hex 32)\n" +
+                "  Reçu    : ${elymonKeyRaw.length()} caractère(s), dont ${nonHex} hors [0-9a-f]\n" +
+                "  (la valeur n'est volontairement pas affichée)")
+    }
+    if (elymonKeyPresent) {
+        String digest = java.security.MessageDigest.getInstance('SHA-256')
+                .digest(elymonKey.getBytes('UTF-8')).encodeHex().toString().substring(0, 8)
+        javax.crypto.Mac mac = javax.crypto.Mac.getInstance('HmacSHA256')
+        mac.init(new javax.crypto.spec.SecretKeySpec(elymonKey.decodeHex(), 'HmacSHA256'))
+        String serverDigest = mac.doFinal('fingerprint'.getBytes('UTF-8')).encodeHex().toString().substring(0, 8)
+        logger.lifecycle("[elythera-key] clé chargée depuis ${elymonKeySource} (empreinte sha256 ${digest}…)")
+        logger.lifecycle("[elythera-key] empreinte serveur (HMAC) ${serverDigest} — à comparer à la ligne « key fingerprint » du journal du mod")
+    } else if (release && System.getenv('ELYMON_ALLOW_UNSIGNED') != '1') {
+        throw new GradleException("[elythera-key] aucune clé de signature Elythera trouvée pour un build release.\n" +
+                "  Renseignez-la, au choix :\n" +
+                "    echo <64 caractères hex> > ${rootProject.file('.elythera-key')}\n" +
+                "    ou ELYTHERA_KEY=<64 caractères hex>, ou ELYTHERA_KEY_FILE=<chemin>\n" +
+                "  Pour produire volontairement un build release NON signé (aucun badge pour les joueurs) :\n" +
+                "    ELYMON_ALLOW_UNSIGNED=1")
+    } else {
+        logger.warn("[elythera-key] ATTENTION : aucune clé Elythera (${elymonKeySource} absent). " +
+                "Ce build ne signera pas le handshake : le mod répondra sans signature.")
+    }
+    if (release && !elymonCanSign) {
+        logger.warn("[elymon-signing] ATTENTION : pas de keystore Elymon utilisable " +
+                "(ELYMON_KEYSTORE_FILE, ELYMON_KEYSTORE_PASSWORD, ELYMON_KEY_ALIAS ou elymon-signing.properties) : " +
+                "l'APK release ne sera PAS signé.")
+    }
+}
+tasks.register('elymonCheckReleaseKey') { doLast { elymonCheckKey(true) } }
+tasks.register('elymonCheckDebugKey') { doLast { elymonCheckKey(false) } }
+tasks.configureEach { task ->
+    if (task.name == 'preReleaseBuild' || task.name == 'preGplayBuild') {
+        task.dependsOn('elymonCheckReleaseKey')
+    } else if (task.name == 'preDebugBuild' || task.name == 'preProguardBuild' || task.name == 'preProguardNoDebugBuild') {
+        task.dependsOn('elymonCheckDebugKey')
+    }
+}
+
 configurations {
     instrumentedClasspath {
         canBeConsumed = false
@@ -85,11 +188,15 @@ android {
             keyAlias "androiddebugkey"
             keyPassword "android"
         }
-        customRelease {
-            storeFile file("aamc_upload.jks")
-            storePassword System.getenv("GPLAY_KEYSTORE_PASSWORD")
-            keyAlias "android_github_release"
-            keyPassword System.getenv("GPLAY_KEYSTORE_PASSWORD")
+        // ELYMON: upstream's customRelease (aamc_upload.jks + GPLAY_KEYSTORE_PASSWORD) is not ours;
+        // release builds are signed with the Elythera keystore when one is configured.
+        if (elymonCanSign) {
+            create('elymonRelease') {
+                storeFile elymonKeystore
+                storePassword elymonStorePassword
+                keyAlias elymonKeyAlias
+                keyPassword elymonKeyPassword
+            }
         }
         googlePlayBuild {
             storeFile file("upload.jks")
@@ -100,13 +207,23 @@ android {
     }
 
     defaultConfig {
-        applicationId "org.angelauramc.amethyst"
-        minSdkVersion 21
+        // ELYMON: Elymon identity; the Java namespace stays net.kdt.pojavlaunch (JNI symbols need it)
+        applicationId "com.elythera.elymon"
+        // ELYMON: Android 10+ only (scoped storage paths, API 29 APIs)
+        minSdkVersion 29
         targetSdkVersion 34
-        versionCode 10000000
-        versionName getVersionName()
+        // ELYMON: version from elymon-version.properties instead of upstream's fixed code and git describe
+        versionCode elymonVersionCode
+        versionName elymonVersionName
         multiDexEnabled true //important
         resValue 'string', 'curseforge_api_key', getCFApiKey()
+        // ELYMON: shared ElytheraMod handshake key ("" when absent), injected like the desktop's prepare-key.cjs
+        buildConfigField 'String', 'ELYTHERA_KEY', "\"${elymonKey}\""
+        buildConfigField 'boolean', 'ELYTHERA_KEY_PRESENT', elymonKeyPresent ? 'true' : 'false'
+        // ELYMON: arm64-v8a only (Java 21 has no 32-bit x86 build, 32-bit ARM caps the heap far below Elymon's needs)
+        ndk {
+            abiFilters += ['arm64-v8a']
+        }
         externalNativeBuild {
             ndkBuild {
                 // Fix for Windows command line length limit
@@ -122,11 +239,12 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.customDebug
-            resValue "string", "app_name", "Amethyst (Debug)"
-            resValue "string", "app_short_name", "Amethyst (Debug)"
-            resValue 'string', 'application_package', 'org.angelauramc.amethyst.debug'
-            resValue 'string', 'storageProviderAuthorities', 'org.angelauramc.amethyst.scoped.gamefolder.debug'
-            resValue 'string', 'shareProviderAuthority', 'org.angelauramc.amethyst.scoped.controlfolder.debug'
+            // ELYMON: Elymon names and authorities (unique per device, so they follow the applicationId)
+            resValue "string", "app_name", "Elymon (Debug)"
+            resValue "string", "app_short_name", "Elymon (Debug)"
+            resValue 'string', 'application_package', 'com.elythera.elymon.debug'
+            resValue 'string', 'storageProviderAuthorities', 'com.elythera.elymon.scoped.gamefolder.debug'
+            resValue 'string', 'shareProviderAuthority', 'com.elythera.elymon.scoped.controlfolder.debug'
         }
         proguard {
             initWith debug
@@ -142,14 +260,16 @@ android {
             // Don't set to true or java.awt will be a.a or something similar.
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.customRelease
+            // ELYMON: Elythera keystore when configured, otherwise an unsigned APK
+            if (elymonCanSign) signingConfig signingConfigs.elymonRelease
             // defaultConfig already set
             // multiDexEnabled = true
             // debuggable = true
-            resValue "string", "app_name", "Amethyst"
-            resValue "string", "app_short_name", "Amethyst"
-            resValue 'string', 'storageProviderAuthorities', 'org.angelauramc.amethyst.scoped.gamefolder'
-            resValue 'string', 'application_package', 'org.angelauramc.amethyst'
+            // ELYMON: Elymon names and authorities
+            resValue "string", "app_name", "Elymon"
+            resValue "string", "app_short_name", "Elymon"
+            resValue 'string', 'storageProviderAuthorities', 'com.elythera.elymon.scoped.gamefolder'
+            resValue 'string', 'application_package', 'com.elythera.elymon'
         }
         gplay {
             initWith release
