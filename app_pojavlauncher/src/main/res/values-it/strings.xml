@@ -13,7 +13,8 @@
     <!-- AlertDialog title -->
     <string name="alerttitle_installmod">Seleziona un installer mod</string>
     <!-- Error messages -->
-    <string name="error_fatal">Amethyst è crashato inaspettatamente</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="error_fatal">Elymon è crashato inaspettatamente</string>
     <string name="error_no_version">Nessuna versione!</string>
     <string name="error_show_more">Mostra altro</string>
     <string name="error_show_less">Mostra meno</string>
@@ -204,7 +205,8 @@
     <string name="arc_capes_title">Mantelli Cosmetica</string>
     <string name="arc_capes_desc">Abilità i mantelli di Cosmetica (precedentemente Arc). Per ulteriori informazioni visita https://cosmetica.cc. Necessita OptiFine.</string>
     <string name="notif_channel_name">Generale</string>
-    <string name="lazy_service_default_title">Servizio di Foreground Amethyst</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="lazy_service_default_title">Servizio di Foreground Elymon</string>
     <string name="mcl_setting_veroption_installed">Installato</string>
     <string name="use_global_default">(Utilizza il predefinito globale)</string>
     <string name="default_control">Controlli default</string>

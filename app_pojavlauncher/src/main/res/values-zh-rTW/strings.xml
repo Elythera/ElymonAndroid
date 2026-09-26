@@ -13,7 +13,8 @@
     <!-- AlertDialog title -->
     <string name="alerttitle_installmod">選擇模組安裝器</string>
     <!-- Error messages -->
-    <string name="error_fatal">Amethyst 意外崩潰</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="error_fatal">Elymon 意外崩潰</string>
     <string name="error_no_version">無可用版本！</string>
     <string name="error_show_more">顯示詳情</string>
     <string name="error_show_less">隱藏詳情</string>
@@ -207,7 +208,8 @@
     <string name="arc_capes_title">Cosmetica 披風</string>
     <string name="arc_capes_desc">啟用來自 Cosmetica（原 Arc）的披風。欲瞭解更多資訊，請訪問 https://cosmetica.cc。需要 OptiFine。</string>
     <string name="notif_channel_name">一般</string>
-    <string name="lazy_service_default_title">Amethyst 前臺服務</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="lazy_service_default_title">Elymon 前臺服務</string>
     <string name="mcl_setting_veroption_installed">已安裝</string>
     <string name="use_global_default">（使用全域預設設定）</string>
     <string name="default_control">預設控制鍵位</string>

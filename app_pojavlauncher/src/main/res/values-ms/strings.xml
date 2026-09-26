@@ -13,7 +13,8 @@
     <!-- AlertDialog title -->
     <string name="alerttitle_installmod">Pilih sebuah pemasang mod</string>
     <!-- Error messages -->
-    <string name="error_fatal">Amethyst telah ranap tanpa diduga</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="error_fatal">Elymon telah ranap tanpa diduga</string>
     <string name="error_no_version">Tiada versi!</string>
     <string name="error_show_more">Tunjuk lebih banyak</string>
     <string name="error_show_less">Tunjuk lebih sedikit</string>
@@ -207,7 +208,8 @@
     <string name="arc_capes_title">Mantel Cosmetica</string>
     <string name="arc_capes_desc">Mendayakan mantel daripada Cosmetica (sebelum ini Arc). Untuk maklumat lanjut sila layari https://cosmetica.cc. Memerlukan OptiFine.</string>
     <string name="notif_channel_name">Umum</string>
-    <string name="lazy_service_default_title">Perkhidmatan Latar Depan Amethyst</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="lazy_service_default_title">Perkhidmatan Latar Depan Elymon</string>
     <string name="mcl_setting_veroption_installed">Dipasang</string>
     <string name="use_global_default">(Gunakan lalai global)</string>
     <string name="default_control">Peta kawalan lalai</string>

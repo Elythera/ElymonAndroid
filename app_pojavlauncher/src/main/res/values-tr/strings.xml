@@ -13,7 +13,8 @@
     <!-- AlertDialog title -->
     <string name="alerttitle_installmod">Bir mod yükleyicisi seç</string>
     <!-- Error messages -->
-    <string name="error_fatal">Amethyst beklenmedik bir sebepten dolayı çöktü</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="error_fatal">Elymon beklenmedik bir sebepten dolayı çöktü</string>
     <string name="error_no_version">Sürüm yok!</string>
     <string name="error_show_more">Daha fazla göster</string>
     <string name="error_show_less">Daha az göster</string>
@@ -207,7 +208,8 @@
     <string name="arc_capes_title">Cosmetica Pelerinleri</string>
     <string name="arc_capes_desc">Cosmetica\'nın (eskiden Arc olarak biliniyordu) Pelerinlerini etkinleştirir. Daha fazla bilgi için lütfen https://cosmetica.cc\'u ziyaret edin. OptiFine gerektirir.</string>
     <string name="notif_channel_name">Genel</string>
-    <string name="lazy_service_default_title">Amethyst Önplan Hizmeti</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="lazy_service_default_title">Elymon Önplan Hizmeti</string>
     <string name="mcl_setting_veroption_installed">Kuruldu</string>
     <string name="use_global_default">(Genel varsayılanı kullan)</string>
     <string name="default_control">Varsayılan kontroller</string>

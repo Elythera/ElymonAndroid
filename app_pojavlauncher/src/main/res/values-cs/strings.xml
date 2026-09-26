@@ -13,7 +13,8 @@
     <!-- AlertDialog title -->
     <string name="alerttitle_installmod">Vyberte instalátor módů</string>
     <!-- Error messages -->
-    <string name="error_fatal">Amethyst neočekávaně spadl</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="error_fatal">Elymon neočekávaně spadl</string>
     <string name="error_no_version">Žádná verze!</string>
     <string name="error_show_more">Zobrazit více</string>
     <string name="error_show_less">Zobrazit méně</string>
@@ -207,7 +208,8 @@
     <string name="arc_capes_title">Kápě Cosmetica</string>
     <string name="arc_capes_desc">Zapne kápě z Cosmeticy (dříve Arc) Pro více informací navštivte https://cosmetica.cc. Vyžaduje OptiFine.</string>
     <string name="notif_channel_name">Všeobecné</string>
-    <string name="lazy_service_default_title">Amethyst služba na popředí</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="lazy_service_default_title">Elymon služba na popředí</string>
     <string name="mcl_setting_veroption_installed">Nainstalováno</string>
     <string name="use_global_default">(Užít globální výchozí nastavení)</string>
     <string name="default_control">Výchozí ovládání</string>
