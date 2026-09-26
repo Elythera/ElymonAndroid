@@ -24,3 +24,6 @@ app_pojavlauncher/.cxx/
 !app_pojavlauncher/debug.keystore
 *.p12
 *.pfx
+
+# ELYMON: local release output (tools/elymon/release-local.sh)
+/out/

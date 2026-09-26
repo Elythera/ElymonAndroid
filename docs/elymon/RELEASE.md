@@ -2,6 +2,8 @@
 
 Ce document décrit comment une version d'Elymon Android part chez les joueurs : numéro de version, tag, CI, clé de signature, publication sur le CDN, et retour arrière.
 
+**Aujourd'hui (choix du propriétaire, 2026-09-27) : les clés restent sur le PC de l'équipe.** Aucun secret n'est dans GitHub ; le job `release` de la CI voit qu'ils manquent et s'efface sans rien publier. La release se construit en local avec `tools/elymon/release-local.sh` (voir « Release locale » plus bas), qui fait exactement ce que ferait la CI. Le jour où les secrets sont ajoutés, la CI reprend la main sans autre changement.
+
 En bref :
 1. Monter `elymon.versionCode` et `elymon.versionName` dans `elymon-version.properties`, commiter sur `elymon`.
 2. Poser un tag annoté `v<versionName>` dont le message contient les nouveautés, en français, pour les joueurs.
@@ -59,6 +61,27 @@ Le **message du tag annoté** devient les notes de la release GitHub et le champ
 | `ELYMON_KEY_PASSWORD` | Mot de passe de la clé (souvent le même que le keystore). |
 
 GitHub masque ces valeurs dans les journaux. Le build n'affiche de la clé Elythera que deux empreintes tronquées (SHA-256 et HMAC), comme le desktop. Les pull requests venant d'un fork n'ont accès à aucun secret : elles ne construisent que le debug.
+
+### Release locale (procédure actuelle)
+
+```
+git switch elymon
+# modifier elymon-version.properties, commiter, pousser
+git tag -a v1.0.0-alpha.2 -m "Elymon 1.0.0-alpha.2
+
+- …"
+ELYTHERA_KEY_FILE=/chemin/vers/.elythera-key tools/elymon/release-local.sh v1.0.0-alpha.2
+```
+
+Le script :
+1. vérifie que le tag est annoté, pointe sur HEAD et vaut `v<elymon.versionName>`, et que l'arbre est propre ;
+2. charge la signature depuis `~/Android/keys/elymon-signing.properties` (ou les variables `ELYMON_*`) et la clé Elythera depuis `ELYTHERA_KEY_FILE` ;
+3. construit `assembleRelease` depuis zéro avec `ELYMON_REQUIRE_SIGNING=1` ;
+4. refuse l'APK si son certificat n'est pas celui de la section 3 ;
+5. écrit dans `out/release/<tag>/` : l'APK, son `.sha256`, `latest.json` (même format que la CI) et `notes.txt` ;
+6. affiche les deux commandes de publication GitHub (`git push origin <tag>` puis `gh release create …`).
+
+Ensuite, déposer l'APK et son `.sha256`, **puis** `latest.json`, dans `/elylauncher/android/` du CDN (voir section 5).
 
 ### Build de release en local
 
