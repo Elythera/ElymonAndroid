@@ -53,6 +53,8 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.elythera.elymon.ElymonConfig;
+import com.elythera.elymon.ElymonGameArgs;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -514,13 +516,16 @@ public final class Tools {
         // We use a janky lwjgl setup. We don't want more people complaining it crashes.
         // ELYMON: always set; upstream only set it when the removed writer had found a Sodium mod.
         javaArgList.add("-Dsodium.checks.issue2561=false");
+        // ELYMON: ElytheraMod's launcher labels, after the user's JVM arguments so they win, as on the desktop
+        javaArgList.addAll(ElymonGameArgs.jvmProperties(ElymonConfig.launcherVersion(BuildConfig.VERSION_CODE)));
         javaArgList.add(versionInfo.mainClass);
         javaArgList.addAll(Arrays.asList(launchArgs));
         // ctx.appendlnToLog("full args: "+javaArgList.toString());
         String args = LauncherPreferences.PREF_CUSTOM_JAVA_ARGS;
         if(Tools.isValidString(minecraftProfile.javaArgs)) args = minecraftProfile.javaArgs;
         FFmpegPlugin.discover(activity);
-        JREUtils.launchJavaVM(activity, runtime, gamedir, javaArgList, args);
+        // ELYMON: the account lets JREUtils add ELYTHERA_KEY/ELYTHERA_UUID to the game's environment
+        JREUtils.launchJavaVM(activity, runtime, gamedir, javaArgList, args, minecraftAccount);
         // If we returned, this means that the JVM exit dialog has been shown and we don't need to be active anymore.
         // We never return otherwise. The process will be killed anyway, and thus we will become inactive
     }
