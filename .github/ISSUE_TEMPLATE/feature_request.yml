@@ -1,31 +1,28 @@
-name: Feature request
-description: 'Ask for new features.'
-title: "[F-Req] <Short description>"
+name: Proposer une amélioration
+description: Une idée pour l'application Elymon pour Android.
+title: "[Idée] <résumé en quelques mots>"
 labels: [enhancement]
 body:
 - type: textarea
-  id: version
+  id: problem
   attributes:
-    label: Is this request related to a bug?
-    description: |
-      Give us some details into the problem, and how this affects it.
-    placeholder: 'Example: You should add a version selector because of the text box being too small.'
+    label: Le besoin
+    description: Qu'est-ce qui te gêne ou te manque aujourd'hui ?
+    placeholder: "Exemple : je n'arrive pas à ouvrir le PC Pokémon avec les contrôles tactiles."
   validations:
     required: true
 
 - type: textarea
+  id: idea
   attributes:
-    label: Describe the request.
-    description: |
-      What do you want to see changed, added, or removed? Make sure to be specific.
-      placeholder: 'Example: A scrollable version picker.'
+    label: Ta proposition
+    description: Ce que tu voudrais voir ajouté, changé ou retiré.
   validations:
     required: true
 
 - type: textarea
+  id: more
   attributes:
-    label: Anything else?
-    description: |
-      Add any other context about the problem here.
+    label: Autre chose ?
   validations:
     required: false

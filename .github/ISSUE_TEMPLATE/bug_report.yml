@@ -1,70 +1,71 @@
-name: Bug report
-description: ' Create a report to help us improve '
-title: "[BUG] <Short description>"
+name: Signaler un bug
+description: Un problème avec l'application Elymon pour Android (installation, mise à jour, lancement, contrôles).
+title: "[Bug] <résumé en quelques mots>"
 labels: [bug]
 body:
-- type: textarea
-  id: version
+- type: markdown
   attributes:
-    label: Describe the bug
-    description: >-
-      A clear and concise description of what the bug is.
-    placeholder: 'Example: I have to press CTRL for keyboard keys to work on my Keychron K2 keyboard when connected via Bluetooth'
-  validations:
-    required: true
-
-- type: textarea
-  attributes:
-    label: The log file and images/videos
-    description: |
-      The log file called `latestlog.txt` is located under `/storage/emulated/0/Android/data/org.angelauramc.amethyst/files` (on Android 10 and higher) or `/storage/emulated/0/games/Amethyst/` (on Android 9 and lower). You may have to activate an option in your file explorer to see hidden files and folders. Recommended file managers are ZArchiver and MiXplorer. |
-      You can also upload here screenshots or videos of the buggy behavior, if possible.
-      
-      Tip: You can attach files by clicking this area to highlight it and then dragging files in or select them on 🖼 option at the toolbar. Do not click anything before the file successfully uploads, otherwise the upload is going to stop and the file won't attach.
-  validations:
-    required: true
-
-- type: textarea
-  attributes:
-    label: Steps To Reproduce
-    description: Steps to reproduce the issue.
-    placeholder: |
-      1. Start Amethyst
-      ... *(your set of actions to reproduce the bug)*
-    render: markdown
-  validations:
-    required: true
-
-- type: textarea
-  attributes:
-    label: Expected Behavior
-    description: A concise description of what you expected to happen.
-    placeholder: 'Example: I expect my keyboard to work correctly without having to hold CTRL.'
-  validations:
-    required: true
-
-- type: textarea
-  attributes:
-    label: Platform
-    description: |
-      Examples:
-        - **Device model**: Huawei P30 Pro 8/512G
-        - **CPU architecture**: arm64 (can be arm64, arm, x86_64 or x86 depending on the device)
-        - **Android version**: 10
-        - **Amethyst version**: (can be found in Android Apps settings, for example `dahlia-20230813-5e8842b-v3_openjdk`)
     value: |
-        - Device model: 
-        - CPU architecture: 
-        - Android version: 
-        - Amethyst version: 
+      Merci de prendre le temps de signaler un problème.
+      Cette page concerne **l'application Elymon pour Android** (le lanceur). Pour un souci en jeu
+      sur le serveur (grades, boutique, Pokémon perdus…), passe plutôt par le support Elythera sur
+      [elythera.com](https://elythera.com).
+
+- type: textarea
+  id: description
+  attributes:
+    label: Ce qui se passe
+    description: Décris le problème en quelques phrases, et le message affiché s'il y en a un.
+    placeholder: "Exemple : après « Mise à jour d'Elymon », l'écran reste noir et le jeu se ferme."
+  validations:
+    required: true
+
+- type: textarea
+  id: steps
+  attributes:
+    label: Comment le reproduire
+    placeholder: |
+      1. Ouvrir Elymon
+      2. Appuyer sur Jouer
+      3. …
+  validations:
+    required: true
+
+- type: textarea
+  id: expected
+  attributes:
+    label: Ce que tu attendais
+  validations:
+    required: true
+
+- type: textarea
+  id: logs
+  attributes:
+    label: Journaux
+    description: |
+      Dans l'application, utilise « Envoyer les journaux », puis joins ici l'archive
+      `elymon-journaux-….zip`. Les jetons de connexion et la clé Elythera en sont retirés
+      automatiquement ; ne colle jamais ici un fichier de `Android/data` à la main.
+      Tu peux aussi ajouter des captures d'écran ou une vidéo.
+  validations:
+    required: true
+
+- type: textarea
+  id: device
+  attributes:
+    label: Appareil
+    description: Le fichier `infos.txt` de l'archive contient déjà tout cela ; remplis ce qui manque.
+    value: |
+      - Modèle du téléphone :
+      - Version d'Android :
+      - Version d'Elymon (infos.txt, ou Réglages Android → Applications → Elymon) :
     render: markdown
   validations:
     required: true
 
 - type: textarea
+  id: more
   attributes:
-    label: Anything else?
-    description: |
-      Add any other context about the problem here.
+    label: Autre chose ?
   validations:
     required: false

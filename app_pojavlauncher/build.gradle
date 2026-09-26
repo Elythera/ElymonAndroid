@@ -180,6 +180,11 @@ def elymonCheckKey = { boolean release ->
                 "Ce build ne signera pas le handshake : le mod répondra sans signature.")
     }
     if (release && !elymonCanSign) {
+        // ELYMON: the release CI sets ELYMON_REQUIRE_SIGNING=1: an unsigned APK must never be published
+        if (System.getenv('ELYMON_REQUIRE_SIGNING') == '1') {
+            throw new GradleException("[elymon-signing] ELYMON_REQUIRE_SIGNING=1 mais aucun keystore Elymon utilisable : " +
+                    "ELYMON_KEYSTORE_FILE (fichier existant), ELYMON_KEYSTORE_PASSWORD et ELYMON_KEY_ALIAS sont requis.")
+        }
         logger.warn("[elymon-signing] ATTENTION : pas de keystore Elymon utilisable " +
                 "(ELYMON_KEYSTORE_FILE, ELYMON_KEYSTORE_PASSWORD, ELYMON_KEY_ALIAS ou elymon-signing.properties) : " +
                 "l'APK release ne sera PAS signé.")
