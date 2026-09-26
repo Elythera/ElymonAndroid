@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Textes ajoutés à l'intégration de la vague 2 (fichiers sans propriétaire). -->
+<resources>
+    <plurals name="elymon_tasks_in_progress">
+        <item quantity="one">%d tâche en cours</item>
+        <item quantity="other">%d tâches en cours</item>
+    </plurals>
+</resources>

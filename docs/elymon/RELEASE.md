@@ -99,7 +99,11 @@ Garde :
 - les mots de passe dans le gestionnaire de mots de passe de l'équipe ;
 - l'empreinte SHA-256 du certificat, ci-dessous, pour vérifier chaque APK publié.
 
-Empreinte SHA-256 du certificat de release : **à renseigner à la création de la clé.**
+Empreinte SHA-256 du certificat de release (clé créée le 2026-09-26, RSA 4096, valable jusqu'en 2056, alias `elymon`) :
+
+```
+D5:3E:70:BD:AB:A2:CB:DC:63:92:82:6D:BC:8D:B5:2B:1B:97:8D:80:C9:46:8D:B6:BF:44:3B:F0:14:A7:E1:86
+```
 
 Jamais dans le dépôt : `.gitignore` exclut `*.jks`, `*.keystore`, `elymon-signing.properties` et `.elythera-key`. Le keystore `debug.keystore` du dépôt est public (mot de passe `android`) : un APK de debug ne doit jamais être distribué aux joueurs.
 
@@ -134,7 +138,7 @@ Les champs inconnus sont ignorés : le format peut s'enrichir sans casser les an
 Ce que fait l'application :
 - **Au démarrage** (`checkOnStartup`) : au plus une fois toutes les 6 h, en silence ; une erreur réseau ou un 404 ne disent rien. Seule une version plus récente ouvre la fenêtre de mise à jour.
 - **Vérification manuelle** (`checkNow`) : répond toujours : « Elymon est à jour », « Vérification impossible », ou la fenêtre de mise à jour.
-- **Au bouton Jouer** : relit le flux (5 s au plus). Si `minVersionCode` dépasse le versionCode installé, la partie est refusée et la mise à jour proposée. Sans réseau, la dernière copie lue du flux fait foi ; un 404 efface cette copie.
+- **Au bouton Jouer** : relit le flux (environ 10 s au plus : 5 s pour se connecter, 5 s pour lire). Si `minVersionCode` dépasse le versionCode installé, la partie est refusée et la mise à jour proposée. Sans réseau, la dernière copie lue du flux fait foi ; un 404 efface cette copie.
 - **Mise à jour** : téléchargement dans le cache de l'application, vérification de la taille et du SHA-256, puis du nom de paquet, du versionCode (plus grand que l'installé et égal à celui annoncé) et du certificat de signature (le même que l'application installée), puis installation par `PackageInstaller`. Android affiche toujours sa propre confirmation. Si « Installer des applis inconnues » n'est pas autorisé pour Elymon, l'application y conduit le joueur. Aucune installation pendant que le jeu tourne.
 
 **Cache CDN** : `latest.json` ne doit pas rester en cache plus de quelques minutes (en-tête `Cache-Control: no-cache` ou TTL court côté nginx) ; l'application envoie `Cache-Control: no-cache`, mais un cache intermédiaire peut l'ignorer. Les APK, eux, ne changent jamais une fois publiés et peuvent être mis en cache longtemps.

@@ -31,7 +31,8 @@ public class ExitActivity extends AppCompatActivity {
 
         new AlertDialog.Builder(this)
                 .setMessage(getString(message,code))
-                .setPositiveButton(R.string.main_share_logs, (dialog, which) -> shareLog(this))
+                // ELYMON: share the redacted support zip (launcher + game logs, secrets removed), not the raw latestlog
+                .setPositiveButton(R.string.main_share_logs, (dialog, which) -> com.elythera.elymon.support.ElymonLogs.share(this))
                 .setOnDismissListener(dialog -> ExitActivity.this.finish())
                 .show();
     }

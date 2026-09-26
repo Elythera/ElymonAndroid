@@ -118,7 +118,8 @@ public class ProgressLayout extends ConstraintLayout implements View.OnClickList
     public void onUpdateTaskCount(int tc) {
         post(()->{
             if(tc > 0) {
-                mTaskNumberDisplayer.setText(getContext().getString(R.string.progresslayout_tasks_in_progress, tc));
+                // ELYMON: « 1 tâche en cours » / « 2 tâches en cours »
+                mTaskNumberDisplayer.setText(getContext().getResources().getQuantityString(R.plurals.elymon_tasks_in_progress, tc, tc));
                 setVisibility(VISIBLE);
             }else
                 setVisibility(GONE);

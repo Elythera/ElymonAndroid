@@ -65,7 +65,8 @@ public class ProgressService extends Service implements TaskCountListener {
             }
         }
         Log.d("ProgressService", "Started!");
-        mNotificationBuilder.setContentText(getString(R.string.progresslayout_tasks_in_progress, ProgressKeeper.getTaskCount()));
+        // ELYMON: plural-aware task counter
+        mNotificationBuilder.setContentText(getResources().getQuantityString(R.plurals.elymon_tasks_in_progress, ProgressKeeper.getTaskCount(), ProgressKeeper.getTaskCount()));
         Notification notification = mNotificationBuilder.build();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(NotificationUtils.NOTIFICATION_ID_PROGRESS_SERVICE, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST);
@@ -93,7 +94,8 @@ public class ProgressService extends Service implements TaskCountListener {
     public void onUpdateTaskCount(int taskCount) {
         Tools.MAIN_HANDLER.post(()->{
             if(taskCount > 0) {
-                mNotificationBuilder.setContentText(getString(R.string.progresslayout_tasks_in_progress, taskCount));
+                // ELYMON: plural-aware task counter
+                mNotificationBuilder.setContentText(getResources().getQuantityString(R.plurals.elymon_tasks_in_progress, taskCount, taskCount));
                 notificationManagerCompat.notify(1, mNotificationBuilder.build());
             }else{
                 stopSelf();
