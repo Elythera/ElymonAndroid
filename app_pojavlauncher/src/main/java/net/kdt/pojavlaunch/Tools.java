@@ -407,28 +407,14 @@ public final class Tools {
 
     public static void launchMinecraft(final AppCompatActivity activity, MinecraftAccount minecraftAccount,
                                        MinecraftProfile minecraftProfile, String versionId, int versionJavaRequirement) throws Throwable {
-        int freeDeviceMemory = getFreeDeviceMemory(activity);
-        int localeString;
-        int freeAddressSpace = Architecture.is32BitsDevice() ? getMaxContinuousAddressSpaceSize() : -1;
-        Log.i("MemStat", "Free RAM: " + freeDeviceMemory + " Addressable: " + freeAddressSpace);
-        if(freeDeviceMemory > freeAddressSpace && freeAddressSpace != -1) {
-            freeDeviceMemory = freeAddressSpace;
-            localeString = R.string.address_memory_warning_msg;
-        } else {
-            localeString = R.string.memory_warning_msg;
-        }
-
-        if(LauncherPreferences.PREF_RAM_ALLOCATION > freeDeviceMemory) {
-            int finalDeviceMemory = freeDeviceMemory;
-            LifecycleAwareAlertDialog.DialogCreator dialogCreator = (dialog, builder) ->
-                builder.setMessage(activity.getString(localeString, finalDeviceMemory, LauncherPreferences.PREF_RAM_ALLOCATION))
-                        .setPositiveButton(android.R.string.ok, (d, w)->{});
-
-            if(LifecycleAwareAlertDialog.haltOnDialog(activity.getLifecycle(), activity, dialogCreator)) {
-                return; // If the dialog's lifecycle has ended, return without
-                // actually launching the game, thus giving us the opportunity
-                // to start after the activity is shown again
-            }
+        // ELYMON: upstream compared the heap with the RAM free right now, which is low on every
+        // phone (Android closes background apps when the game needs memory), so it warned at every
+        // Play. Elymon warns only when the heap leaves less than 2 GiB of the phone's total RAM,
+        // with "Ne plus afficher". Elymon is arm64-only: no 32-bit address-space check.
+        if(com.elythera.elymon.ui.ElymonMemoryWarning.haltOnWarning(activity)) {
+            return; // If the dialog's lifecycle has ended, return without
+            // actually launching the game, thus giving us the opportunity
+            // to start after the activity is shown again
         }
         LauncherProfiles.load();
         File gamedir = Tools.getGameDirPath(minecraftProfile);

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Elymon ui package: home screen, settings, "À propos", memory warning. French, in the
+     default folder on purpose (DESIGN.md): every locale, French included, uses these texts. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <!-- Home -->
+    <string name="elymon_home_play">Jouer</string>
+    <string name="elymon_home_logo_description">Elymon</string>
+    <!-- Status line under Play. %1$s: pack version ("2.4.6"), %2$s: Minecraft version, %3$s: app version -->
+    <string name="elymon_home_status_full">Elymon %1$s · Minecraft %2$s · application %3$s</string>
+    <!-- %1$s: pack version, %2$s: app version -->
+    <string name="elymon_home_status_pack">Elymon %1$s · application %2$s</string>
+    <!-- Before the first sync. %1$s: app version -->
+    <string name="elymon_home_status_app">Application %1$s</string>
+
+    <!-- Settings: Elymon section -->
+    <string name="elymon_settings_category">Elymon</string>
+    <string name="elymon_settings_renderer_title">Moteur de rendu</string>
+    <string name="elymon_settings_renderer_mobileglues">MobileGlues (recommandé)</string>
+    <string name="elymon_settings_renderer_zink">Kopper Zink (Vulkan)</string>
+    <!-- %1$s: the renderer chosen -->
+    <string name="elymon_settings_renderer_summary">%1$s. Essaie l\'autre moteur seulement si le jeu s\'affiche mal ou plante au démarrage.</string>
+    <string name="elymon_settings_renderer_only">%1$s : le seul moteur compatible avec ce téléphone.</string>
+    <string name="elymon_settings_renderer_error">Impossible d\'enregistrer le moteur de rendu. Réessaie.</string>
+    <string name="elymon_settings_memory_title">Mémoire allouée</string>
+    <!-- %1$d: recommended heap in MB for this phone, %2$d: largest heap without a warning -->
+    <string name="elymon_settings_memory_summary">Recommandé pour ce téléphone : %1$d Mo. Au-delà de %2$d Mo, Android risque de fermer le jeu en pleine partie.</string>
+    <string name="elymon_settings_memory_unit">" Mo"</string>
+    <string name="elymon_settings_mic_title">Micro pour le chat vocal</string>
+    <string name="elymon_settings_mic_granted">Autorisé : tu peux parler aux autres joueurs avec Simple Voice Chat.</string>
+    <string name="elymon_settings_mic_ask">Non autorisé : touche ici pour autoriser le micro et parler avec Simple Voice Chat.</string>
+    <string name="elymon_settings_mic_denied">Refusé : touche ici pour ouvrir les réglages d\'Android, puis autorise le micro dans Autorisations.</string>
+    <string name="elymon_settings_mic_already">Le micro est déjà autorisé.</string>
+    <string name="elymon_settings_controls_title">Contrôles tactiles</string>
+    <string name="elymon_settings_controls_summary">Déplace, redimensionne ou ajoute les boutons affichés en jeu.</string>
+    <string name="elymon_settings_folder_title">Ouvrir le dossier du jeu</string>
+    <string name="elymon_settings_folder_summary">Captures d\'écran, packs de ressources et mondes, dans le gestionnaire de fichiers.</string>
+    <string name="elymon_settings_folder_missing">Le dossier du jeu n\'existe pas encore : appuie une première fois sur Jouer.</string>
+    <string name="elymon_settings_folder_no_app">Aucune application de ce téléphone ne sait ouvrir ce dossier.</string>
+    <string name="elymon_settings_logs_title">Envoyer les journaux</string>
+    <string name="elymon_settings_logs_summary">Pour aider l\'équipe Elythera à comprendre un problème. Les informations de connexion en sont retirées.</string>
+    <string name="elymon_settings_update_title">Vérifier les mises à jour</string>
+    <!-- %1$s: installed app version -->
+    <string name="elymon_settings_update_summary">Version installée : %1$s</string>
+    <string name="elymon_settings_about_title">À propos et licences</string>
+    <string name="elymon_settings_about_summary">Version, code source, licences et remerciements</string>
+    <string name="elymon_settings_other_category">Réglages détaillés</string>
+
+    <!-- Memory warning before the game starts -->
+    <string name="elymon_memory_warning_title">Beaucoup de mémoire allouée</string>
+    <!-- %1$d: heap in MB, %2$d: total RAM of the phone in MB, %3$d: largest heap without a warning -->
+    <string name="elymon_memory_warning_message">Le jeu va réserver %1$d Mo de mémoire, sur les %2$d Mo de ce téléphone. Android risque de le fermer en pleine partie. Si cela arrive, règle la mémoire allouée à %3$d Mo ou moins dans les paramètres d\'Elymon.</string>
+    <string name="elymon_memory_warning_play">Jouer quand même</string>
+    <string name="elymon_memory_warning_never">Ne plus afficher</string>
+
+    <!-- Microphone, asked once before the first Play -->
+    <string name="elymon_mic_prompt_title">Chat vocal</string>
+    <string name="elymon_mic_prompt_message">Elymon inclut Simple Voice Chat pour parler aux autres joueurs. Autorise le micro si tu veux parler. Tu pourras changer d\'avis dans les paramètres.</string>
+    <string name="elymon_mic_prompt_allow">Autoriser le micro</string>
+    <string name="elymon_mic_prompt_later">Pas maintenant</string>
+
+    <!-- "À propos et licences" -->
+    <!-- %1$s: version name, %2$d: version code -->
+    <string name="elymon_about_version">Version %1$s (%2$d)</string>
+    <string name="elymon_about_tagline">Elymon est un launcher de la communauté Elythera.</string>
+    <string name="elymon_about_source_title">Code source</string>
+    <string name="elymon_about_source_url" translatable="false">https://github.com/Elythera/ElymonAndroid</string>
+    <string name="elymon_about_license_title">Licence</string>
+    <string name="elymon_about_license_summary">GNU LGPL 3.0. Tu peux étudier, modifier et redistribuer le code de l\'application aux conditions de cette licence.</string>
+    <string name="elymon_about_license_url" translatable="false">https://www.gnu.org/licenses/lgpl-3.0.html</string>
+    <string name="elymon_about_credits_category">Remerciements</string>
+    <string name="elymon_about_amethyst_title" translatable="false">Amethyst-Android</string>
+    <string name="elymon_about_amethyst_summary">Elymon est un fork d\'Amethyst-Android, développé par AngelAuraMC et ses contributeurs, sous licence LGPL 3.0. Merci à eux.</string>
+    <string name="elymon_about_amethyst_url" translatable="false">https://github.com/AngelAuraMC/Amethyst-Android</string>
+    <string name="elymon_about_pojav_title" translatable="false">PojavLauncher</string>
+    <string name="elymon_about_pojav_summary">Amethyst est issu de PojavLauncher, créé par Tran Khanh Duy (khanhduytran0) et la PojavLauncherTeam, lui-même basé sur Boardwalk de zhuowei. Merci à tous leurs auteurs et contributeurs.</string>
+    <string name="elymon_about_pojav_url" translatable="false">https://github.com/PojavLauncherTeam/PojavLauncher</string>
+    <string name="elymon_about_components_category">Composants tiers</string>
+    <string name="elymon_about_files_category">Textes de licence fournis avec l\'application</string>
+    <string name="elymon_about_file_summary">Touche ici pour lire le texte.</string>
+    <string name="elymon_about_file_error">Impossible de lire ce fichier.</string>
+    <string name="elymon_about_notice_category">Mentions</string>
+    <string name="elymon_about_notice">Minecraft est une marque de Mojang AB. Elymon n\'est ni approuvé ni affilié à Mojang ou Microsoft.</string>
+    <string name="elymon_about_no_browser">Aucun navigateur n\'est installé pour ouvrir ce lien.</string>
+    <string name="elymon_about_close">Fermer</string>
+    <!-- Third-party components: the three arrays go together, item by item. -->
+    <string-array name="elymon_about_component_names" translatable="false">
+        <item>OpenJDK (Java 21)</item>
+        <item>LWJGL 3</item>
+        <item>MobileGlues</item>
+        <item>Mesa 3D (Kopper Zink)</item>
+        <item>Krypton Wrapper (NG-GL4ES)</item>
+        <item>ANGLE</item>
+        <item>OpenAL Soft</item>
+        <item>SDL</item>
+        <item>ByteHook</item>
+        <item>JNA</item>
+        <item>Gson</item>
+        <item>AndroidX</item>
+        <item>Amethyst-Android</item>
+    </string-array>
+    <string-array name="elymon_about_component_licenses">
+        <item>GNU GPL 2.0 avec l\'exception « Classpath »</item>
+        <item>Licence BSD à 3 clauses</item>
+        <item>GNU LGPL 2.1</item>
+        <item>Licence MIT</item>
+        <item>Licence MIT</item>
+        <item>Licence BSD à 3 clauses</item>
+        <item>GNU LGPL 2.0</item>
+        <item>Licence zlib</item>
+        <item>Licence MIT</item>
+        <item>GNU LGPL 2.1 ou Apache 2.0</item>
+        <item>Licence Apache 2.0</item>
+        <item>Licence Apache 2.0</item>
+        <item>Liste complète des composants et de leurs licences</item>
+    </string-array>
+    <string-array name="elymon_about_component_urls" translatable="false">
+        <item>https://openjdk.org/legal/gplv2+ce.html</item>
+        <item>https://github.com/LWJGL/lwjgl3/blob/master/LICENSE.md</item>
+        <item>https://github.com/MobileGL-Dev/MobileGlues</item>
+        <item>https://docs.mesa3d.org/license.html</item>
+        <item>https://github.com/BZLZHH/NG-GL4ES</item>
+        <item>https://chromium.googlesource.com/angle/angle/+/main/LICENSE</item>
+        <item>https://github.com/kcat/openal-soft/blob/master/COPYING</item>
+        <item>https://www.libsdl.org/license.php</item>
+        <item>https://github.com/bytedance/bhook</item>
+        <item>https://github.com/java-native-access/jna</item>
+        <item>https://github.com/google/gson</item>
+        <item>https://developer.android.com/jetpack/androidx</item>
+        <item>https://github.com/AngelAuraMC/Amethyst-Android#credits--dependencies</item>
+    </string-array>
+</resources>
