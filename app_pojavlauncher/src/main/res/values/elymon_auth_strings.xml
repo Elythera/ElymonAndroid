@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Elymon: Microsoft accounts through the Elythera Entra app. French is the default language of the elymon_* files. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!-- Account list and sign-in page -->
+    <string name="elymon_auth_add_account">Ajouter un compte Microsoft</string>
+    <string name="elymon_auth_microsoft_button">Se connecter avec Microsoft</string>
+    <string name="elymon_auth_login_started">Connexion au compte Microsoft…</string>
+    <string name="elymon_auth_login_done">Compte Microsoft connecté</string>
+    <string name="elymon_auth_login_cancelled">Connexion annulée</string>
+    <string name="elymon_auth_reconnect">Se reconnecter</string>
+
+    <!-- Progress bar steps -->
+    <string name="elymon_auth_progress_microsoft">Connexion à Microsoft…</string>
+    <string name="elymon_auth_progress_xbox">Connexion à Xbox Live…</string>
+    <string name="elymon_auth_progress_minecraft">Connexion à Minecraft…</string>
+    <string name="elymon_auth_progress_profile">Lecture du profil Minecraft…</string>
+
+    <!-- Error dialog title -->
+    <string name="elymon_auth_error_title">Échec de la connexion Microsoft</string>
+
+    <!-- Sign-in page (the redirect that carries the answer) -->
+    <string name="elymon_auth_redirect_error">Microsoft a interrompu la connexion (%1$s).\n\n%2$s</string>
+    <string name="elymon_auth_redirect_invalid">La réponse de Microsoft ne correspond pas à cette connexion. Recommence depuis « Ajouter un compte Microsoft ».</string>
+
+    <!-- Microsoft token endpoint -->
+    <string name="elymon_auth_code_expired">La connexion a pris trop de temps ou a déjà servi. Recommence depuis « Ajouter un compte Microsoft ».</string>
+    <string name="elymon_auth_session_expired">Ta session Microsoft a expiré. Reconnecte ton compte avec « Ajouter un compte Microsoft ».</string>
+    <string name="elymon_auth_microsoft_refused">Microsoft a refusé la connexion (%1$s). Réessaie ; si cela recommence, préviens l\'équipe Elythera.</string>
+    <string name="elymon_auth_no_refresh_token">Microsoft n\'a pas donné l\'accès durable au compte. Recommence la connexion et accepte les autorisations demandées.</string>
+
+    <!-- Any service -->
+    <string name="elymon_auth_http_refused">%1$s a refusé la connexion (HTTP %2$d).</string>
+    <string name="elymon_auth_service_unavailable">%1$s ne répond pas pour le moment. Réessaie dans un instant.</string>
+    <string name="elymon_auth_rate_limited">Trop de tentatives de connexion. Patiente quelques minutes, puis réessaie.</string>
+    <string name="elymon_auth_network">Impossible de joindre les serveurs de Microsoft. Vérifie ta connexion Internet, puis réessaie.</string>
+    <string name="elymon_auth_bad_response">Réponse inattendue des serveurs de connexion. Réessaie dans un instant.</string>
+    <string name="elymon_auth_unexpected">Erreur inattendue pendant la connexion Microsoft. Réessaie dans un instant.</string>
+    <string name="elymon_auth_save_failed">Le compte n\'a pas pu être enregistré sur le téléphone. Vérifie l\'espace libre, puis réessaie.</string>
+
+    <!-- Minecraft -->
+    <string name="elymon_auth_app_not_allowed">Minecraft refuse l\'application de connexion d\'Elythera (HTTP 403). Préviens l\'équipe Elythera.</string>
+    <string name="elymon_auth_not_owned">Ce compte Microsoft ne possède pas Minecraft : Java Edition. Elymon ne se lance pas en mode démo : achète le jeu sur minecraft.net ou connecte un autre compte.</string>
+    <string name="elymon_auth_no_profile">Ce compte possède Minecraft mais n\'a pas encore de profil (pseudo). Crée-le sur minecraft.net, puis reconnecte-toi.</string>
+
+    <!-- Xbox Live (XSTS XErr codes, like helios-core MicrosoftResponse.js) -->
+    <string name="elymon_auth_xerr_banned">Ce compte Microsoft est suspendu par Xbox pour non-respect des standards de la communauté. Plus d\'informations sur enforcement.xbox.com.</string>
+    <string name="elymon_auth_xerr_no_account">Aucun compte Xbox n\'est associé à ce compte Microsoft. Crée-en un sur xbox.com (ou connecte-toi une fois sur minecraft.net), puis réessaie.</string>
+    <string name="elymon_auth_xerr_terms">Ce compte Microsoft n\'a pas encore accepté les conditions d\'utilisation de Xbox. Connecte-toi une fois sur xbox.com pour les accepter, puis réessaie.</string>
+    <string name="elymon_auth_xerr_not_available">Ce compte Microsoft est rattaché à un pays où Xbox Live n\'est pas disponible. La connexion à Minecraft passe obligatoirement par ce service.</string>
+    <string name="elymon_auth_xerr_adult_verification">Un adulte doit vérifier ce compte Microsoft avant qu\'il puisse jouer. Termine la vérification sur xbox.com, puis réessaie.</string>
+    <string name="elymon_auth_xerr_child">Les comptes de moins de 18 ans doivent être ajoutés à une famille Microsoft par un adulte (family.microsoft.com) pour se connecter avec le lanceur Elythera.</string>
+    <string name="elymon_auth_xerr_unknown">Xbox Live a refusé la connexion (erreur %1$d).</string>
+
+    <!-- Before a launch (ElymonSession.ensureFresh) -->
+    <string name="elymon_auth_no_account">Aucun compte n\'est sélectionné. Ajoute ton compte Microsoft pour jouer.</string>
+    <string name="elymon_auth_not_microsoft">Ce compte n\'est pas un compte Microsoft. Elymon se joue uniquement avec un compte Microsoft qui possède Minecraft : Java Edition.</string>
+</resources>
