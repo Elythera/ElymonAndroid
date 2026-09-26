@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
 
+import com.elythera.elymon.ElymonJavaRuntime;
 import com.kdt.mcgui.ProgressLayout;
 
 import net.kdt.pojavlaunch.multirt.MultiRTUtils;
@@ -173,6 +174,9 @@ public class NewJREUtil {
     }
 
     private static String getJreSource(int javaVersion, String arch){
+        // ELYMON: Elymon's Java 21 comes from ElymonConfig, so it can move to an Elythera CDN mirror
+        String elymonSource = ElymonJavaRuntime.sourceUrl(javaVersion, arch);
+        if (elymonSource != null) return elymonSource;
         return String.format("https://github.com/AngelAuraMC/angelauramc-openjdk-build/releases/download/download_jre%1$s/jre%1$s-android-%2$s.tar.xz", javaVersion, arch);
     }
     /**
@@ -195,6 +199,9 @@ public class NewJREUtil {
                     null,
                     monitor
             );
+            // ELYMON: the archive must match its pinned SHA-256 before anything is unpacked
+            if (!ElymonJavaRuntime.checkPinned(outputFile, javaVersion, arch))
+                throw new RuntimeException(activity.getString(R.string.elymon_jre_checksum_mismatch, javaVersion));
             String jreName = "External-" + javaVersion;
             MultiRTUtils.installRuntimeNamed(NATIVE_LIB_DIR, new FileInputStream(outputFile), jreName);
             MultiRTUtils.postPrepare(jreName);

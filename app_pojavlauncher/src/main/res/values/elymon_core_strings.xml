@@ -52,4 +52,7 @@
     <!-- Notification when the sync ends while no launcher screen is open -->
     <string name="elymon_notif_ready_title">Elymon est prêt</string>
     <string name="elymon_notif_ready_text">Ouvre l\'application et appuie sur Jouer pour lancer la partie.</string>
+
+    <!-- Java runtime pin (NewJREUtil); %1$d: Java version -->
+    <string name="elymon_jre_checksum_mismatch">Le fichier de Java %1$d téléchargé ne correspond pas à celui attendu (somme de contrôle différente) : il a été supprimé. Réessaie ; si le problème continue, préviens l\'équipe Elythera.</string>
 </resources>
