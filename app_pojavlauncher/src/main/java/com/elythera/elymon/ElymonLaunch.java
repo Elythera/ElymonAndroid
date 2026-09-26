@@ -48,7 +48,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * What the Play button does in Elymon (DESIGN.md "Play flow"):
- * 1. refuse while the :game process is alive;
+ * 1. refuse while the :game process is alive, and on a device that cannot run Elymon
+ *    ({@link ElymonEligibility});
  * 2. refresh the Microsoft session;
  * 3. sync the pack from the Elythera distribution, with progress in ProgressLayout;
  * 4. gate on the distribution's requires and availability;
@@ -117,6 +118,11 @@ public final class ElymonLaunch {
                 return;
             }
 
+            // Before the first byte of a sync: RAM, OpenGL ES and free space.
+            if (!ElymonEligibility.check(app)) {
+                return;
+            }
+
             ProgressLayout.setProgress(PROGRESS_KEY, 0, R.string.elymon_progress_session);
             try {
                 ElymonSession.ensureFresh(app, account);
@@ -141,6 +147,8 @@ public final class ElymonLaunch {
             ProgressLayout.setProgress(PROGRESS_KEY, 100, R.string.elymon_progress_minecraft);
             Tools.runOnUiThread(() -> handOver(app, activityRef, versionId));
             handedOver = true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (SyncException e) {
             if (!e.cancelled) {
                 String message = Tools.isValidString(e.getMessage()) ? e.getMessage()

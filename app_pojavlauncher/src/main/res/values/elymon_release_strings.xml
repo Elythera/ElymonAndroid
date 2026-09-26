@@ -10,4 +10,21 @@
     <string name="elymon_logs_text">Journaux d\'Elymon %1$s. Les jetons de connexion et la clé Elythera en ont été retirés.</string>
     <string name="elymon_logs_failed">Impossible de préparer les journaux. Réessaie.</string>
     <string name="elymon_logs_no_app">Aucune application ne permet d\'envoyer ce fichier.</string>
+
+    <!-- Device eligibility (ElymonEligibility), checked at every Play before the sync -->
+    <string name="elymon_eligibility_ram_title">Mémoire insuffisante</string>
+    <!-- %1$s: RAM of the device such as "3,6 Go", %2$s: minimum such as "5,0 Go" -->
+    <string name="elymon_eligibility_ram_refused">Ton appareil dispose de %1$s de mémoire vive. Elymon compte plus de cent mods et demande au moins %2$s (un téléphone de 6 Go de RAM ou plus) : il ne pourrait pas démarrer sur cet appareil.</string>
+    <string name="elymon_eligibility_ram_warn_title">Expérience dégradée</string>
+    <!-- %1$s: RAM of the device -->
+    <string name="elymon_eligibility_ram_warn">Ton appareil dispose de %1$s de mémoire vive. Elymon peut démarrer, mais l\'expérience sera dégradée : chargements longs, saccades, voire fermeture du jeu si d\'autres applications restent ouvertes. Un téléphone de 8 Go de RAM ou plus est recommandé.\n\nCe message ne s\'affichera plus.</string>
+    <string name="elymon_eligibility_continue">Continuer</string>
+    <string name="elymon_eligibility_cancel">Annuler</string>
+    <string name="elymon_eligibility_gles_title">Appareil non compatible</string>
+    <!-- %1$s: OpenGL ES version such as "3.1" -->
+    <string name="elymon_eligibility_gles_refused">La puce graphique de ton appareil ne gère qu\'OpenGL ES %1$s. Elymon a besoin d\'OpenGL ES 3.2 au minimum : il ne peut pas fonctionner sur cet appareil.</string>
+    <string name="elymon_eligibility_space_title">Espace de stockage insuffisant</string>
+    <!-- %1$s: free space such as "1,4 Go", %2$s: required space such as "3,0 Go" -->
+    <string name="elymon_eligibility_space_first">Il reste %1$s de libre sur ton appareil. La première installation d\'Elymon a besoin d\'au moins %2$s : le jeu, ses mods et Java, plus de la marge pour tes mondes et les journaux. Libère de la place, puis réessaie.</string>
+    <string name="elymon_eligibility_space_later">Il reste %1$s de libre sur ton appareil. Elymon a besoin d\'au moins %2$s de libre pour se mettre à jour et fonctionner. Libère de la place, puis réessaie.</string>
 </resources>
