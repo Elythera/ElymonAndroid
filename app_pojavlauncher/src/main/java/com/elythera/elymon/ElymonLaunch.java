@@ -20,6 +20,8 @@ import com.elythera.elymon.sync.SyncException;
 import com.elythera.elymon.sync.SyncListener;
 import com.elythera.elymon.sync.SyncOptions;
 import com.elythera.elymon.sync.SyncResult;
+import com.elythera.elymon.update.ElymonUpdater;
+import com.elythera.elymon.update.UpdateManifest;
 import com.kdt.mcgui.ProgressLayout;
 
 import net.kdt.pojavlaunch.BuildConfig;
@@ -48,7 +50,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * What the Play button does in Elymon (DESIGN.md "Play flow"):
- * 1. refuse while the :game process is alive;
+ * 1. refuse while the :game process is alive, on a device that cannot run Elymon
+ *    ({@link ElymonEligibility}) and when the self-update feed requires a newer app;
  * 2. refresh the Microsoft session;
  * 3. sync the pack from the Elythera distribution, with progress in ProgressLayout;
  * 4. gate on the distribution's requires and availability;
@@ -59,6 +62,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class ElymonLaunch {
     /** Progress key of the Elymon steps; LauncherActivity's ProgressLayout observes it. */
     public static final String PROGRESS_KEY = "elymon_sync";
+
+    /** Private preferences of the Play flow (eligibility warning, last pack synced). */
+    public static final String STATE_PREFS = "elymon_launch";
+    /** Pack version of the last successful sync, for the support logs. */
+    public static final String STATE_PACK_VERSION = "pack_version";
+    /** When that sync ended (epoch ms). */
+    public static final String STATE_PACK_SYNCED_AT = "pack_synced_at";
 
     private static final String TAG = "ElymonLaunch";
     private static final String POLICY_ASSET = "elymon/android-policy.json";
@@ -110,6 +120,17 @@ public final class ElymonLaunch {
                 return;
             }
 
+            // Before the first byte of a sync: RAM, OpenGL ES and free space.
+            if (!ElymonEligibility.check(app)) {
+                return;
+            }
+            // A build below the feed's minVersionCode must update before playing.
+            UpdateManifest requiredUpdate = ElymonUpdater.requiredUpdate(app);
+            if (requiredUpdate != null) {
+                ElymonUpdater.offerRequiredUpdate(requiredUpdate);
+                return;
+            }
+
             ProgressLayout.setProgress(PROGRESS_KEY, 0, R.string.elymon_progress_session);
             try {
                 ElymonSession.ensureFresh(app, account);
@@ -128,11 +149,14 @@ public final class ElymonLaunch {
             if (result == null || !passesGates(app, result.meta)) {
                 return;
             }
+            rememberPack(app, result);
 
             final String versionId = Tools.isValidString(result.versionId) ? result.versionId : null;
             ProgressLayout.setProgress(PROGRESS_KEY, 100, R.string.elymon_progress_minecraft);
             Tools.runOnUiThread(() -> handOver(app, activityRef, versionId));
             handedOver = true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (SyncException e) {
             if (!e.cancelled) {
                 String message = Tools.isValidString(e.getMessage()) ? e.getMessage()
@@ -147,6 +171,16 @@ public final class ElymonLaunch {
                 ProgressLayout.clearProgress(PROGRESS_KEY);
             }
         }
+    }
+
+    /** For the support logs (ElymonLogs' infos.txt): which pack this phone last installed. */
+    private static void rememberPack(Context app, SyncResult result) {
+        String packVersion = result.meta == null ? null : trimmed(result.meta.packVersion);
+        app.getSharedPreferences(STATE_PREFS, Context.MODE_PRIVATE).edit()
+                .putString(STATE_PACK_VERSION, Tools.isValidString(packVersion) ? packVersion : "inconnue")
+                .putLong(STATE_PACK_SYNCED_AT, System.currentTimeMillis())
+                // commit: the launcher process is killed soon after the game starts.
+                .commit();
     }
 
     private static SyncOptions syncOptions(Context app) throws SyncException {
@@ -266,7 +300,7 @@ public final class ElymonLaunch {
     }
 
     /** Whether this app's :game process (MainActivity, GameService) is running. */
-    static boolean isGameProcessAlive(Context context) {
+    public static boolean isGameProcessAlive(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager == null) return false;
         // Since API 22 this lists only the caller's own processes.
@@ -295,7 +329,7 @@ public final class ElymonLaunch {
     }
 
     /** "350 Mo", "1,2 Go". */
-    static String formatSize(Context context, long bytes) {
+    public static String formatSize(Context context, long bytes) {
         double megabytes = Math.max(0, bytes) / (1024.0 * 1024.0);
         if (megabytes >= 1024.0) {
             return context.getString(R.string.elymon_size_gb, String.format(Locale.FRANCE, "%.1f", megabytes / 1024.0));

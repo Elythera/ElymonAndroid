@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Elymon release package: self-update, support logs, device eligibility. French, in the default
+     folder on purpose (DESIGN.md): every locale, French included, uses these texts. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <!-- Self-update (ElymonUpdater) -->
+    <string name="elymon_update_checking">Recherche d\'une mise à jour…</string>
+    <!-- %1$s: installed version name -->
+    <string name="elymon_update_up_to_date">Elymon est à jour (version %1$s).</string>
+    <string name="elymon_update_check_failed_title">Vérification impossible</string>
+    <string name="elymon_update_check_failed">Impossible de vérifier s\'il existe une mise à jour d\'Elymon. Vérifie ta connexion à Internet et réessaie.</string>
+    <string name="elymon_update_available_title">Mise à jour disponible</string>
+    <string name="elymon_update_mandatory_title">Mise à jour obligatoire</string>
+    <!-- %1$s: new version, %2$s: installed version, %3$s: download size such as "82 Mo" -->
+    <string name="elymon_update_available_message">La version %1$s d\'Elymon est disponible (tu as la version %2$s).\nTéléchargement : %3$s.</string>
+    <string name="elymon_update_mandatory_message">Cette version d\'Elymon (%2$s) n\'est plus acceptée : installe la version %1$s pour continuer à jouer.\nTéléchargement : %3$s.</string>
+    <string name="elymon_update_notes">Nouveautés :</string>
+    <string name="elymon_update_install">Mettre à jour</string>
+    <string name="elymon_update_later">Plus tard</string>
+    <string name="elymon_update_close">Fermer</string>
+    <string name="elymon_update_downloading_title">Téléchargement de la mise à jour</string>
+    <!-- %1$s and %2$s: sizes such as "12 Mo" -->
+    <string name="elymon_update_progress">%1$s sur %2$s</string>
+    <string name="elymon_update_verifying">Vérification du fichier…</string>
+    <string name="elymon_update_cancel">Annuler</string>
+    <string name="elymon_update_failed_title">Mise à jour impossible</string>
+    <string name="elymon_update_download_failed">Le téléchargement de la mise à jour a échoué. Vérifie ta connexion à Internet et réessaie.</string>
+    <string name="elymon_update_corrupt">Le fichier téléchargé ne correspond pas à la mise à jour annoncée (taille ou somme de contrôle différente). Il a été supprimé ; réessaie un peu plus tard.</string>
+    <string name="elymon_update_invalid_apk">Le fichier téléchargé n\'est pas une application Android valide. Il a été supprimé.</string>
+    <string name="elymon_update_wrong_package">Le fichier téléchargé n\'est pas une mise à jour d\'Elymon. Il a été supprimé.</string>
+    <string name="elymon_update_wrong_signature">Le fichier téléchargé n\'est pas signé par l\'équipe Elythera. Il a été supprimé par sécurité ; préviens l\'équipe Elythera.</string>
+    <string name="elymon_update_not_newer">Le fichier téléchargé n\'est pas plus récent que la version installée. Il a été supprimé.</string>
+    <string name="elymon_update_game_running">Ferme d\'abord le jeu : installer la mise à jour arrêterait ta partie en cours.</string>
+    <string name="elymon_update_unknown_sources_title">Autorisation nécessaire</string>
+    <string name="elymon_update_unknown_sources_message">Pour installer la mise à jour, Android doit autoriser Elymon à installer des applications.\n\nAppuie sur « Ouvrir les réglages », active « Autoriser cette source » (Installer des applis inconnues), puis reviens ici et appuie de nouveau sur « Mettre à jour ». Le fichier déjà téléchargé sera réutilisé.</string>
+    <string name="elymon_update_open_settings">Ouvrir les réglages</string>
+    <string name="elymon_update_install_failed">L\'installation de la mise à jour a échoué. Réessaie ; si le problème continue, télécharge la dernière version depuis elythera.com.</string>
+    <string name="elymon_update_install_storage">L\'installation de la mise à jour a échoué : l\'espace de stockage est insuffisant. Libère de la place puis réessaie.</string>
+    <string name="elymon_update_install_conflict">L\'installation de la mise à jour a été refusée par Android : la version installée ne peut pas être remplacée par celle-ci. Préviens l\'équipe Elythera.</string>
+    <string name="elymon_update_install_cancelled">Mise à jour annulée.</string>
+    <string name="elymon_update_install_confirm">Confirme l\'installation de la mise à jour d\'Elymon.</string>
+
+    <!-- Support logs (ElymonLogs) -->
+    <string name="elymon_logs_preparing">Préparation des journaux…</string>
+    <string name="elymon_logs_chooser">Envoyer les journaux d\'Elymon</string>
+    <string name="elymon_logs_subject">Journaux Elymon</string>
+    <!-- %1$s: app version -->
+    <string name="elymon_logs_text">Journaux d\'Elymon %1$s. Les jetons de connexion et la clé Elythera en ont été retirés.</string>
+    <string name="elymon_logs_failed">Impossible de préparer les journaux. Réessaie.</string>
+    <string name="elymon_logs_no_app">Aucune application ne permet d\'envoyer ce fichier.</string>
+
+    <!-- Device eligibility (ElymonEligibility), checked at every Play before the sync -->
+    <string name="elymon_eligibility_ram_title">Mémoire insuffisante</string>
+    <!-- %1$s: RAM of the device such as "3,6 Go", %2$s: minimum such as "5,0 Go" -->
+    <string name="elymon_eligibility_ram_refused">Ton appareil dispose de %1$s de mémoire vive. Elymon compte plus de cent mods et demande au moins %2$s (un téléphone de 6 Go de RAM ou plus) : il ne pourrait pas démarrer sur cet appareil.</string>
+    <string name="elymon_eligibility_ram_warn_title">Expérience dégradée</string>
+    <!-- %1$s: RAM of the device -->
+    <string name="elymon_eligibility_ram_warn">Ton appareil dispose de %1$s de mémoire vive. Elymon peut démarrer, mais l\'expérience sera dégradée : chargements longs, saccades, voire fermeture du jeu si d\'autres applications restent ouvertes. Un téléphone de 8 Go de RAM ou plus est recommandé.\n\nCe message ne s\'affichera plus.</string>
+    <string name="elymon_eligibility_continue">Continuer</string>
+    <string name="elymon_eligibility_cancel">Annuler</string>
+    <string name="elymon_eligibility_gles_title">Appareil non compatible</string>
+    <!-- %1$s: OpenGL ES version such as "3.1" -->
+    <string name="elymon_eligibility_gles_refused">La puce graphique de ton appareil ne gère qu\'OpenGL ES %1$s. Elymon a besoin d\'OpenGL ES 3.2 au minimum : il ne peut pas fonctionner sur cet appareil.</string>
+    <string name="elymon_eligibility_space_title">Espace de stockage insuffisant</string>
+    <!-- %1$s: free space such as "1,4 Go", %2$s: required space such as "3,0 Go" -->
+    <string name="elymon_eligibility_space_first">Il reste %1$s de libre sur ton appareil. La première installation d\'Elymon a besoin d\'au moins %2$s : le jeu, ses mods et Java, plus de la marge pour tes mondes et les journaux. Libère de la place, puis réessaie.</string>
+    <string name="elymon_eligibility_space_later">Il reste %1$s de libre sur ton appareil. Elymon a besoin d\'au moins %2$s de libre pour se mettre à jour et fonctionner. Libère de la place, puis réessaie.</string>
+</resources>

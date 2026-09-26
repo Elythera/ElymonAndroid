@@ -1,0 +1,271 @@
+# Elymon Android: host tests, debug APK on every push or pull request to "elymon",
+# signed release APK + latest.json + GitHub Release on every "v*" tag.
+# docs/elymon/RELEASE.md explains the release side (secrets, tagging, publishing to the CDN).
+name: Elymon Android
+
+on:
+  push:
+    branches: [elymon]
+    tags: ['v*']
+  pull_request:
+    branches: [elymon]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: elymon-${{ github.ref }}
+  # A tag build is never cancelled half-way.
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+env:
+  # SDK packages the build needs: compileSdk 37, androidnsbypass's 36.1, NDK 27.3 and CMake 3.22.1.
+  SDK_PACKAGES: >-
+    platforms;android-37.0 platforms;android-36.1 build-tools;37.0.0 build-tools;36.0.0
+    ndk;27.3.13750724 cmake;3.22.1
+
+jobs:
+  tests:
+    name: Tests hôte
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Tests du moteur de synchronisation
+        run: |
+          # The planning test is pinned to the 2026-09-26 distribution: the committed snapshot,
+          # not the live file, whose counts change with every pack update.
+          mkdir -p "$RUNNER_TEMP/notes"
+          xz -dc tools/elymon/fixtures/distribution-2026-09-26.json.xz > "$RUNNER_TEMP/notes/distribution-2026-09-26.json"
+          ELYMON_NOTES="$RUNNER_TEMP/notes" \
+          ELYMON_VERSION_JSON="$GITHUB_WORKSPACE/tools/elymon/fixtures/neoforge-21.1.249.json" \
+            bash tools/elymon/test-sync.sh
+
+      - name: Tests du paquet release
+        run: bash tools/elymon/test-release.sh
+
+  debug:
+    name: APK de debug
+    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+    needs: tests
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sous-modules en HTTPS
+        run: |
+          # .gitmodules gives androidnsbypass an SSH URL; the runner has no SSH key.
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git submodule sync --recursive
+          git submodule update --init --recursive --depth 1
+
+      - name: JDK 8 et 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          # The last one is JAVA_HOME (Gradle); JDK 8 is the MioLibPatcher toolchain.
+          java-version: |
+            8
+            21
+
+      - name: SDK Android, NDK et CMake
+        uses: android-actions/setup-android@v3
+        with:
+          packages: ${{ env.SDK_PACKAGES }}
+
+      - name: Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: true
+
+      - name: assembleDebug
+        run: |
+          # No ELYTHERA_KEY here: a debug build without it only warns (the handshake is unsigned).
+          ./gradlew :app_pojavlauncher:assembleDebug --no-daemon \
+            "-Porg.gradle.java.installations.paths=$JAVA_HOME_8_X64,$JAVA_HOME_21_X64"
+          mkdir -p out
+          cp app_pojavlauncher/build/outputs/apk/debug/app_pojavlauncher-debug.apk "out/Elymon-debug-${GITHUB_SHA::8}.apk"
+          (cd out && sha256sum Elymon-debug-*.apk > "Elymon-debug-${GITHUB_SHA::8}.apk.sha256")
+
+      - name: Artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Elymon-debug-${{ github.sha }}
+          path: out/
+          if-no-files-found: error
+
+  release:
+    name: APK de release
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    needs: tests
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Secrets présents
+        env:
+          ELYTHERA_KEY: ${{ secrets.ELYTHERA_KEY }}
+          ELYMON_KEYSTORE_BASE64: ${{ secrets.ELYMON_KEYSTORE_BASE64 }}
+          ELYMON_KEYSTORE_PASSWORD: ${{ secrets.ELYMON_KEYSTORE_PASSWORD }}
+          ELYMON_KEY_ALIAS: ${{ secrets.ELYMON_KEY_ALIAS }}
+          ELYMON_KEY_PASSWORD: ${{ secrets.ELYMON_KEY_PASSWORD }}
+        run: |
+          # Names only: the values never reach the log.
+          missing=""
+          for name in ELYTHERA_KEY ELYMON_KEYSTORE_BASE64 ELYMON_KEYSTORE_PASSWORD ELYMON_KEY_ALIAS ELYMON_KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then missing="$missing $name"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Secrets manquants :$missing. Ajoutez-les dans Settings > Secrets and variables > Actions (docs/elymon/RELEASE.md). Aucun APK de release non signé n'est publié."
+            exit 1
+          fi
+
+      - name: Tag et version
+        id: version
+        run: |
+          VERSION_NAME="$(sed -n 's/^elymon\.versionName=//p' elymon-version.properties | tr -d '[:space:]')"
+          VERSION_CODE="$(sed -n 's/^elymon\.versionCode=//p' elymon-version.properties | tr -d '[:space:]')"
+          MIN_VERSION_CODE="$(sed -n 's/^elymon\.minVersionCode=//p' elymon-version.properties | tr -d '[:space:]')"
+          if [ "$GITHUB_REF_NAME" != "v$VERSION_NAME" ]; then
+            echo "::error::Le tag $GITHUB_REF_NAME ne correspond pas à elymon.versionName=$VERSION_NAME (attendu : v$VERSION_NAME)."
+            exit 1
+          fi
+          case "$VERSION_CODE" in ''|*[!0-9]*) echo "::error::elymon.versionCode invalide : '$VERSION_CODE'"; exit 1 ;; esac
+          case "$MIN_VERSION_CODE" in ''|*[!0-9]*) MIN_VERSION_CODE="" ;; esac
+          if [ -n "$MIN_VERSION_CODE" ] && [ "$MIN_VERSION_CODE" -gt "$VERSION_CODE" ]; then
+            echo "::error::elymon.minVersionCode ($MIN_VERSION_CODE) dépasse elymon.versionCode ($VERSION_CODE)."
+            exit 1
+          fi
+          PRERELEASE=false
+          case "$VERSION_NAME" in *-*) PRERELEASE=true ;; esac
+          {
+            echo "name=$VERSION_NAME"
+            echo "code=$VERSION_CODE"
+            echo "min=$MIN_VERSION_CODE"
+            echo "prerelease=$PRERELEASE"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Sous-modules en HTTPS
+        run: |
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git submodule sync --recursive
+          git submodule update --init --recursive --depth 1
+
+      - name: JDK 8 et 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            21
+
+      - name: SDK Android, NDK et CMake
+        uses: android-actions/setup-android@v3
+        with:
+          packages: ${{ env.SDK_PACKAGES }}
+
+      - name: Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: true
+          # A signed release is built from scratch: no Gradle cache is read or written.
+          cache-disabled: true
+
+      - name: Keystore
+        env:
+          ELYMON_KEYSTORE_BASE64: ${{ secrets.ELYMON_KEYSTORE_BASE64 }}
+        run: |
+          umask 077
+          printf '%s' "$ELYMON_KEYSTORE_BASE64" | tr -d '[:space:]' | base64 -d > "$RUNNER_TEMP/elymon-release.jks"
+          test -s "$RUNNER_TEMP/elymon-release.jks" || { echo "::error::ELYMON_KEYSTORE_BASE64 ne se décode pas en keystore."; exit 1; }
+
+      - name: assembleRelease
+        env:
+          ELYTHERA_KEY: ${{ secrets.ELYTHERA_KEY }}
+          ELYMON_KEYSTORE_PASSWORD: ${{ secrets.ELYMON_KEYSTORE_PASSWORD }}
+          ELYMON_KEY_ALIAS: ${{ secrets.ELYMON_KEY_ALIAS }}
+          ELYMON_KEY_PASSWORD: ${{ secrets.ELYMON_KEY_PASSWORD }}
+          # build.gradle refuses to produce an unsigned release APK when this is set.
+          ELYMON_REQUIRE_SIGNING: '1'
+        run: |
+          export ELYMON_KEYSTORE_FILE="$RUNNER_TEMP/elymon-release.jks"
+          ./gradlew :app_pojavlauncher:assembleRelease --no-daemon \
+            "-Porg.gradle.java.installations.paths=$JAVA_HOME_8_X64,$JAVA_HOME_21_X64"
+
+      - name: Signature, SHA-256 et latest.json
+        env:
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+          VERSION_CODE: ${{ steps.version.outputs.code }}
+          MIN_VERSION_CODE: ${{ steps.version.outputs.min }}
+        run: |
+          APK_IN=app_pojavlauncher/build/outputs/apk/release/app_pojavlauncher-release.apk
+          test -f "$APK_IN" || { echo "::error::APK signé introuvable ($APK_IN)."; ls -la app_pojavlauncher/build/outputs/apk/release/ || true; exit 1; }
+          APKSIGNER="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)apksigner"
+          # Prints the signer certificate digests (public), to compare with the ones in RELEASE.md.
+          "$APKSIGNER" verify --verbose --print-certs "$APK_IN"
+          mkdir -p out
+          APK="Elymon-$VERSION_NAME.apk"
+          cp "$APK_IN" "out/$APK"
+          (cd out && sha256sum "$APK" > "$APK.sha256")
+          SHA256="$(cut -d' ' -f1 "out/$APK.sha256")"
+          SIZE="$(stat -c %s "out/$APK")"
+          export SHA256 SIZE
+          # Release notes: the annotated tag's message (French, meant for the players).
+          git fetch --no-tags --depth=1 origin "+refs/tags/$GITHUB_REF_NAME:refs/tags/$GITHUB_REF_NAME"
+          git for-each-ref --format='%(contents:subject)%0a%0a%(contents:body)' "refs/tags/$GITHUB_REF_NAME" > "$RUNNER_TEMP/notes.txt"
+          python3 - "$RUNNER_TEMP/notes.txt" out/latest.json <<'PY'
+          import json, os, sys
+          notes = open(sys.argv[1], encoding="utf-8").read().strip()
+          if not notes:
+              notes = "Corrections et améliorations."
+          manifest = {
+              "versionCode": int(os.environ["VERSION_CODE"]),
+              "versionName": os.environ["VERSION_NAME"],
+              "url": "https://cdn.elythera.com/elylauncher/android/Elymon-%s.apk" % os.environ["VERSION_NAME"],
+              "sha256": os.environ["SHA256"],
+              "size": int(os.environ["SIZE"]),
+              "notes": notes,
+          }
+          if os.environ.get("MIN_VERSION_CODE"):
+              manifest["minVersionCode"] = int(os.environ["MIN_VERSION_CODE"])
+          with open(sys.argv[2], "w", encoding="utf-8") as out:
+              json.dump(manifest, out, ensure_ascii=False, indent=2)
+              out.write("\n")
+          PY
+          cp "$RUNNER_TEMP/notes.txt" out/notes.txt
+          cat out/latest.json
+
+      - name: Publication GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+          PRERELEASE: ${{ steps.version.outputs.prerelease }}
+        run: |
+          flags=""
+          if [ "$PRERELEASE" = "true" ]; then flags="--prerelease"; fi
+          gh release create "$GITHUB_REF_NAME" \
+            "out/Elymon-$VERSION_NAME.apk" "out/Elymon-$VERSION_NAME.apk.sha256" out/latest.json \
+            --verify-tag --title "Elymon $VERSION_NAME" --notes-file out/notes.txt $flags
+
+      - name: Artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Elymon-${{ steps.version.outputs.name }}
+          path: out/
+          if-no-files-found: error
+
+      - name: Effacer le keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/elymon-release.jks"

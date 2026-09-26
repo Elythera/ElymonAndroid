@@ -11,6 +11,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.elythera.elymon.ElymonAssetTrim;
 import com.kdt.mcgui.ProgressLayout;
 
 import net.kdt.pojavlaunch.JAssetInfo;
@@ -403,6 +404,8 @@ public class MinecraftDownloader {
         for(String asset : assetNames) {
             JAssetInfo assetInfo = assetObjects.get(asset);
             if(assetInfo == null) continue;
+            // ELYMON: vanilla music (~545 MB of the 825 MB index) is neither downloaded nor verified: Elymon replaces it
+            if(ElymonAssetTrim.isTrimmed(asset)) continue;
             File targetFile;
             String hashedPath = assetInfo.hash.substring(0, 2) + File.separator + assetInfo.hash;
             String basePath = assets.mapToResources ? Tools.OBSOLETE_RESOURCES_PATH : Tools.ASSETS_PATH;
@@ -419,6 +422,9 @@ public class MinecraftDownloader {
                     assetInfo.size,
                     false);
         }
+        // ELYMON: free the music objects that builds older than the trim downloaded (never an object a kept asset uses)
+        if(!assets.virtual && !assets.mapToResources)
+            ElymonAssetTrim.deleteTrimmedObjects(new File(Tools.ASSETS_PATH, "objects"), assetObjects, info -> info.hash);
     }
 
     private void scheduleLoggingAssetDownloadIfNeeded(JMinecraftVersionList.LoggingConfig loggingConfig) throws IOException {

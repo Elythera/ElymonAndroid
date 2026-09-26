@@ -24,6 +24,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- ELYMON: self-update from the Elythera CDN through PackageInstaller (com.elythera.elymon.update) -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <meta-data android:name="android.game_mode_config"
         android:resource="@xml/game_mode_config" />
     <!-- ELYMON: no backup: the accounts in DIR_DATA/accounts hold Microsoft refresh tokens -->
@@ -129,6 +131,22 @@
                 <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
+
+        <!-- ELYMON: hands the redacted support zip to the share sheet; paths limited to cache/elymon-logs/ -->
+        <provider
+            android:name="com.elythera.elymon.support.ElymonLogsProvider"
+            android:authorities="${applicationId}.elymon.logs"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/elymon_logs_paths" />
+        </provider>
+
+        <!-- ELYMON: outcome of the self-update's PackageInstaller session (only our own PendingIntent reaches it) -->
+        <receiver
+            android:name="com.elythera.elymon.update.UpdateInstallReceiver"
+            android:exported="false" />
 
         <service android:name=".services.ProgressService"
             android:foregroundServiceType="dataSync"/>

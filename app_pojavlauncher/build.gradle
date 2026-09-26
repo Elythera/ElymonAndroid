@@ -180,6 +180,11 @@ def elymonCheckKey = { boolean release ->
                 "Ce build ne signera pas le handshake : le mod répondra sans signature.")
     }
     if (release && !elymonCanSign) {
+        // ELYMON: the release CI sets ELYMON_REQUIRE_SIGNING=1: an unsigned APK must never be published
+        if (System.getenv('ELYMON_REQUIRE_SIGNING') == '1') {
+            throw new GradleException("[elymon-signing] ELYMON_REQUIRE_SIGNING=1 mais aucun keystore Elymon utilisable : " +
+                    "ELYMON_KEYSTORE_FILE (fichier existant), ELYMON_KEYSTORE_PASSWORD et ELYMON_KEY_ALIAS sont requis.")
+        }
         logger.warn("[elymon-signing] ATTENTION : pas de keystore Elymon utilisable " +
                 "(ELYMON_KEYSTORE_FILE, ELYMON_KEYSTORE_PASSWORD, ELYMON_KEY_ALIAS ou elymon-signing.properties) : " +
                 "l'APK release ne sera PAS signé.")
@@ -243,7 +248,8 @@ android {
         versionCode elymonVersionCode
         versionName elymonVersionName
         multiDexEnabled true //important
-        resValue 'string', 'curseforge_api_key', getCFApiKey()
+        // ELYMON: Elymon has no modpack browser: no CurseForge key is ever embedded, whatever the environment holds
+        resValue 'string', 'curseforge_api_key', 'DUMMY'
         // ELYMON: shared ElytheraMod handshake key ("" when absent), injected like the desktop's prepare-key.cjs
         buildConfigField 'String', 'ELYTHERA_KEY', "\"${elymonKey}\""
         buildConfigField 'boolean', 'ELYTHERA_KEY_PRESENT', elymonKeyPresent ? 'true' : 'false'
@@ -316,6 +322,14 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // ELYMON: the LWJGL natives AARs put every ABI under assets/components/lwjgl-3.x-natives/<abi>/;
+    // this APK is arm64-v8a only (AsyncAssetManager unpacks the device's ABI alone), so the others
+    // (26 MiB compressed, downloaded again with every self-update) are left out. The rest is aapt's default.
+    androidResources {
+        ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~' +
+                ':<dir>armeabi-v7a:<dir>x86:<dir>x86_64'
     }
 
     bundle {

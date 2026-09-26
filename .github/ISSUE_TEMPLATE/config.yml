@@ -1,1 +1,8 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Support Elythera (compte, serveur, boutique)
+    url: https://elythera.com
+    about: Pour tout ce qui concerne ton compte, le serveur Elymon ou la boutique, contacte l'équipe Elythera.
+  - name: Amethyst-Android (projet d'origine)
+    url: https://github.com/AngelAuraMC/Amethyst-Android
+    about: Elymon Android est un fork d'Amethyst ; ne signale pas là-bas un problème propre à Elymon.

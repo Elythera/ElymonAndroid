@@ -1,0 +1,139 @@
+Elymon Android
+==============
+
+Elymon Android est une version modifiée d'Amethyst-Android (AngelAuraMC),
+elle-même issue de PojavLauncher (PojavLauncherTeam) et de Boardwalk (zhuowei).
+
+  Amethyst-Android : https://github.com/AngelAuraMC/Amethyst-Android
+  PojavLauncher    : https://github.com/PojavLauncherTeam/PojavLauncher
+  Boardwalk        : https://github.com/zhuowei/Boardwalk
+
+Licence
+-------
+
+L'application est distribuée sous la GNU Lesser General Public License,
+version 3 (fichier LICENSE), qui complète la GNU General Public License,
+version 3 (fichier COPYING). Le code ajouté par Elythera
+(app_pojavlauncher/src/main/java/com/elythera/**, tools/elymon/**, la CI et
+la documentation d'Elymon) est publié sous la même licence LGPL-3.0.
+
+Avis de modification (GPLv3 §5a, LGPLv3 §2) : à partir de septembre 2026,
+Elythera a modifié Amethyst-Android pour en faire un lanceur dédié au modpack
+Elymon : identifiant d'application com.elythera.elymon, synchronisation du
+pack depuis la distribution d'Elythera, connexion Microsoft par l'application
+Entra d'Elythera, mise à jour automatique, journaux d'assistance caviardés,
+contrôles tactiles Cobblemon, interface en français. Chaque modification d'un
+fichier d'origine est marquée d'un commentaire « ELYMON: » ; l'historique git
+du dépôt en donne le détail et la date.
+
+Source correspondante : pour chaque APK publié, le code source complet
+(scripts de build et CI compris) est celui du tag v<version> du dépôt public
+https://github.com/Elythera/ElymonAndroid. Les secrets de build (clé de
+signature de l'APK, ELYTHERA_KEY) ne font pas partie de la source.
+
+Elymon Android n'est pas un produit officiel Minecraft. Il n'est ni approuvé
+par Mojang ou Microsoft, ni associé à eux. (NOT AN OFFICIAL MINECRAFT PRODUCT.
+NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.) Minecraft est une
+marque de Mojang AB. Elymon Android n'embarque aucun fichier de Minecraft :
+le jeu est téléchargé depuis les serveurs de Mojang, avec le compte Microsoft
+du joueur, qui doit posséder Minecraft: Java Edition.
+
+Composants tiers inclus dans l'APK
+----------------------------------
+
+Les textes de licence fournis par les bibliothèques précompilées sont copiés
+dans l'APK sous assets/licenses/ (fusionnés depuis app_pojavlauncher/libs/*.aar).
+Seule l'architecture arm64-v8a est empaquetée.
+
+Bibliothèques natives précompilées (app_pojavlauncher/libs/*.aar)
+  ANGLE (angle-release.aar) ............. licence BSD de style Chromium
+                                          (assets/licenses/angle-arr-license.txt,
+                                          assets/licenses/ANGLE_LICENSE)
+  MobileGlues ........................... LGPL-2.1 (mobileglues-lgplv2.1-license.txt)
+                                          https://github.com/MobileGL-Dev/MobileGlues
+  Mesa / Zink / Kopper (kopper-zink) .... MIT et licences Mesa (mesa-licenses.rst)
+  OpenAL Soft (openal-soft-release.aar) . GNU Library GPL v2 (fichier OPENAL-SOFT_GPL2)
+                                          https://github.com/kcat/openal-soft
+    oboe ................................ Apache-2.0 (OBOE_APACHE2)
+    PFFFT (modifié) ..................... licence de type BSD (PFFFT_LICENSE)
+  LWJGL 3.3.3 et 3.4.1, natifs .......... BSD-3-Clause (lwjgl_license.txt), avec :
+    FreeType ............................ FreeType Project License (freetype_license.txt)
+    GLFW ................................ zlib (glfw_license.txt)
+    libffi .............................. MIT (libffi_license.txt)
+    liburing ............................ MIT (liburing_license.txt)
+    NanoVG, NanoSVG, Blendish ........... zlib / MIT (nanovg_, nanosvg_, blendish_license.txt)
+    shaderc ............................. Apache-2.0 (shaderc_license.txt)
+    tinyfiledialogs ..................... zlib (tinyfd_license.txt)
+    Vulkan Memory Allocator ............. MIT (vma_license.txt)
+    en-têtes Khronos .................... licence de type MIT (khronos_license.txt)
+    OpenAL Soft (natifs LWJGL) .......... (openal_soft_license.txt)
+  SDL3 et sdl2-compat ................... zlib (sdl3-zlib-license.txt, sdl2-compat-zlib-license.txt)
+  imgui-java ............................ MIT (imgui-java-mit-license.txt)
+  zstd-jni .............................. BSD-2-Clause (zstd-jni-bsd2-license.txt) ;
+                                          zstd : BSD ou GPLv2 au choix (zstd-gplv2-license.txt)
+  SPIRV-Cross (spirv-cross-natives.aar) . aucun fichier de licence dans l'AAR ;
+                                          SPIRV-Cross est publié sous Apache-2.0 par Khronos
+  SimpleFPEWrapper ...................... aucun fichier de licence dans l'AAR (à vérifier
+                                          auprès d'AngelAuraMC)
+
+Bibliothèques natives du dépôt (app_pojavlauncher/src/main/jniLibs/arm64-v8a)
+  libunpack200.so ....................... OpenJDK, GPL-2.0 avec Classpath Exception
+  libvulkan_freedreno.so (Turnip) ....... Mesa, MIT
+  libVkLayer_khronos_timeline_semaphore . Khronos Vulkan-ExtensionLayer, Apache-2.0
+
+Code natif compilé depuis ce dépôt
+  pojavexec, exithook, linkerhook, glxshim, awt (src/main/jni) ... LGPL-3.0 (Amethyst)
+  bytehook (ByteDance, Maven) ................................... MIT
+  androidnsbypass (sous-module) ................................. MIT et BSD-2-Clause
+
+Bibliothèques Java
+  AndroidX (appcompat, preference, constraintlayout, core…) ..... Apache-2.0
+  Gson 2.8.6 (libs/gson-2.8.6.jar) ............................... Apache-2.0
+  exp4j (libs/exp4j-0.4.9-SNAPSHOT.jar) .......................... Apache-2.0
+  ExagearApacheCommons.jar, commons-codec 1.15 ................... Apache-2.0
+  javax.annotation-api 1.3.2 ..................................... CDDL-1.1 ou GPL-2.0 avec Classpath Exception
+  JNA 5.14.0 ..................................................... Apache-2.0 ou LGPL-2.1 au choix
+  XZ for Java 1.8 ................................................ domaine public
+  HtmlCleaner 2.6.1 .............................................. BSD
+  TouchController proxy-client-android 0.0.4 ..................... LGPL-3.0-or-later
+  virtual-joystick-android, ExtendedView, android_gamepad_remapper,
+  portrait-sdp/ssp, checkerboarddrawable ......................... voir chaque projet
+                                          (github.com/Mathias-Boulay, PojavLauncherTeam,
+                                          duanhong169) ; licences non recopiées ici,
+                                          à vérifier avant une diffusion large
+
+Fichiers Java exécutés par le jeu (app_pojavlauncher/src/main/assets/components)
+  LWJGL 3 (jars fusionnés) ...................... BSD-3-Clause
+  Caciocavallo (caciocavallo, caciocavallo17) ... GPL-2.0 avec Classpath Exception
+  forge_installer, arc_dns_injector, methods_injector_agent ... LGPL-3.0 (Amethyst)
+  MioLibPatcher (sous-module, AngelAuraMC) ....... aucune licence indiquée par le projet
+                                                   (à vérifier auprès d'AngelAuraMC)
+
+Polices (app_pojavlauncher/src/main/res/font)
+  Noto Sans Bold ....................... SIL Open Font License 1.1 (assets/font/LICENSE_OFL.txt)
+  minecraft_ten.ttf .................... licence non documentée par le projet d'origine
+                                         (à vérifier, ou à retirer)
+
+Téléchargés par l'application, pas inclus dans l'APK
+----------------------------------------------------
+
+  Java 21 pour Android (arm64) : publié par AngelAuraMC
+    (github.com/AngelAuraMC/angelauramc-openjdk-build, release download_jre21),
+    GPL-2.0 avec Classpath Exception ; vérifié par son SHA-256 avant d'être installé.
+    Si Elythera le recopie un jour sur son CDN, Elythera devra aussi en proposer
+    la source (GPLv2 §3).
+  Minecraft, ses bibliothèques et ses assets : serveurs de Mojang, selon le
+    Contrat de Licence Utilisateur Final de Minecraft.
+  Le modpack Elymon (NeoForge, mods, configuration) : distribution d'Elythera
+    (cdn.elythera.com), chaque mod sous sa propre licence.
+
+Offre de source écrite
+----------------------
+
+Pour les composants sous GPL ou LGPL inclus dans l'APK (OpenAL Soft,
+MobileGlues, Caciocavallo, libunpack200, TouchController, le code
+d'Amethyst et d'Elymon), Elythera fournit, pendant au moins trois ans
+après la dernière distribution d'une version donnée, la source
+correspondante à qui la demande, par le dépôt public ci-dessus ou sur
+demande à l'équipe Elythera (https://elythera.com), sans autre frais que
+celui de la transmission.

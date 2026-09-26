@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ELYMON: what ElymonLogsProvider may hand out: only the support zips in cache/elymon-logs/
+     (ElymonLogs.CACHE_DIR). Nothing else of the app is reachable through it. -->
+<paths>
+    <cache-path name="journaux" path="elymon-logs/" />
+</paths>
