@@ -324,6 +324,14 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    // ELYMON: the LWJGL natives AARs put every ABI under assets/components/lwjgl-3.x-natives/<abi>/;
+    // this APK is arm64-v8a only (AsyncAssetManager unpacks the device's ABI alone), so the others
+    // (26 MiB compressed, downloaded again with every self-update) are left out. The rest is aapt's default.
+    androidResources {
+        ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~' +
+                ':<dir>armeabi-v7a:<dir>x86:<dir>x86_64'
+    }
+
     bundle {
         language {
             enableSplit = false
