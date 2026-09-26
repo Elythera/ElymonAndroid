@@ -10,9 +10,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,6 +28,12 @@ import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.content.res.ResourcesCompat;
 
 
+import com.elythera.elymon.auth.AuthorizationGrant;
+import com.elythera.elymon.auth.ElymonAccounts;
+import com.elythera.elymon.auth.ElymonAuthException;
+import com.elythera.elymon.auth.ElymonSession;
+import com.elythera.elymon.auth.MicrosoftAuthFailure;
+
 import net.kdt.pojavlaunch.PojavProfile;
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.Tools;
@@ -44,7 +48,6 @@ import net.kdt.pojavlaunch.extra.ExtraListener;
 import net.kdt.pojavlaunch.value.MinecraftAccount;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,28 +95,40 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
     };
 
     private final DoneListener mDoneListener = account -> {
-        Toast.makeText(getContext(), R.string.main_login_done, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), R.string.elymon_auth_login_done, Toast.LENGTH_SHORT).show();
 
-        // Check if the account being added is not one that is already existing
-        // Like login twice on the same mc account...
-        for(String mcAccountName : mAccountList){
-            if(mcAccountName.equals(account.username)) return;
-        }
-
+        // ELYMON: always reload from disk and select the account. Upstream returned early for an
+        // account already listed, which kept the old account and token in memory, and a refresh
+        // may have moved the account to a new Minecraft name (ElymonAccounts.forgetOldName).
         mSelectecAccount = account;
         invalidate();
-        mAccountList.add(account.username);
-        reloadAccounts(false, mAccountList.size() -1);
+        loadAccountList();
+        int position = mAccountList.indexOf(account.username);
+        reloadAccounts(false, Math.max(position, 0));
     };
 
     private final ErrorListener mErrorListener = errorMessage -> {
         mLoginBarPaint.setColor(Color.RED);
         Context context = getContext();
+        // ELYMON: a lost session (expired or revoked refresh token) offers to sign in again.
+        if(errorMessage instanceof MicrosoftAuthFailure
+                && ((MicrosoftAuthFailure) errorMessage).getKind() == ElymonAuthException.Kind.RECONNECT) {
+            new AlertDialog.Builder(context)
+                    .setTitle(R.string.elymon_auth_error_title)
+                    .setMessage(((MicrosoftAuthFailure) errorMessage).toString(context))
+                    .setPositiveButton(R.string.elymon_auth_reconnect,
+                            (dialog, which) -> ExtraCore.setValue(ExtraConstants.SELECT_AUTH_METHOD, true))
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
+            invalidate();
+            return;
+        }
         if(errorMessage instanceof PresentedException) {
             PresentedException exception = (PresentedException) errorMessage;
             Throwable cause = exception.getCause();
             if(cause == null) {
-                Tools.dialog(context, context.getString(R.string.global_error), exception.toString(context));
+                // ELYMON: French title (elymon_auth_strings.xml).
+                Tools.dialog(context, context.getString(R.string.elymon_auth_error_title), exception.toString(context));
             }else {
                 Tools.showError(context, exception.toString(context), exception.getCause());
             }
@@ -124,28 +139,21 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
     };
 
     /* Triggered when we need to do microsoft login */
-    private final ExtraListener<Uri> mMicrosoftLoginListener = (key, value) -> {
+    // ELYMON: MicrosoftLoginFragment posts the authorization code with its PKCE verifier. The
+    // value leaves the bus at once, and only the spinner on screen redeems it, once: a spinner
+    // left behind by a destroyed activity may still be listening.
+    private final ExtraListener<Object> mMicrosoftLoginListener = (key, value) -> {
+        if(!(value instanceof AuthorizationGrant) || !isAttachedToWindow()) return false;
+        ExtraCore.removeValue(ExtraConstants.MICROSOFT_LOGIN_TODO);
+        AuthorizationGrant grant = (AuthorizationGrant) value;
+        if(!grant.claim()) return false;
         mLoginBarPaint.setColor(getResources().getColor(R.color.minebutton_color));
-        new MicrosoftBackgroundLogin(false, value.getQueryParameter("code")).performLogin(
+        new MicrosoftBackgroundLogin(grant.code, grant.codeVerifier).performLogin(
                 mProgressListener, mDoneListener, mErrorListener);
         return false;
     };
 
-    /* Triggered when we need to perform mojang login */
-    private final ExtraListener<String[]> mMojangLoginListener = (key, value) -> {
-        if(value[1].isEmpty()){ // Test mode
-            MinecraftAccount account = new MinecraftAccount();
-            account.username = value[0];
-            try {
-                account.save();
-            }catch (IOException e){
-                Log.e("McAccountSpinner", "Failed to save the account : " + e);
-            }
-
-            mDoneListener.onLoginDone(account);
-        }
-        return false;
-    };
+    // ELYMON: the local ("mojang") login listener is gone, Elymon only takes Microsoft accounts.
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -155,11 +163,13 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
         mLoginBarPaint.setColor(getResources().getColor(R.color.minebutton_color));
         mLoginBarPaint.setStrokeWidth(getResources().getDimensionPixelOffset(R.dimen._2sdp));
 
+        // ELYMON: context for the French messages of the refresh before Play (ElymonSession.ensureFresh).
+        ElymonSession.attach(getContext());
+
         // Set behavior
         reloadAccounts(true, 0);
         setOnItemSelectedListener(this);
 
-        ExtraCore.addExtraListener(ExtraConstants.MOJANG_LOGIN_TODO, mMojangLoginListener);
         ExtraCore.addExtraListener(ExtraConstants.MICROSOFT_LOGIN_TODO, mMicrosoftLoginListener);
     }
 
@@ -196,8 +206,12 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
 
     private void removeAccount(int position) {
         if(position == 0) return;
-        File accountFile = new File(Tools.DIR_ACCOUNT_NEW, mAccountList.get(position)+".json");
+        String name = mAccountList.get(position); // ELYMON
+        File accountFile = new File(Tools.DIR_ACCOUNT_NEW, name+".json");
         if(accountFile.exists()) accountFile.delete();
+        // ELYMON: also forget the cached head and, if it was selected, the selection.
+        ElymonAccounts.forgetHead(name);
+        if(name.equals(PojavProfile.getCurrentProfileName(getContext()))) PojavProfile.setCurrentProfile(getContext(), null);
         mAccountList.remove(position);
 
         reloadAccounts(false, 0);
@@ -251,15 +265,7 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
      */
     private void reloadAccounts(boolean fromFiles, int overridePosition){
         if(fromFiles){
-            mAccountList.clear();
-
-            mAccountList.add(getContext().getString(R.string.main_add_account));
-            File accountFolder = new File(Tools.DIR_ACCOUNT_NEW);
-            if(accountFolder.exists()){
-                for (String fileName : accountFolder.list()) {
-                    mAccountList.add(fileName.substring(0, fileName.length() - 5));
-                }
-            }
+            loadAccountList(); // ELYMON
         }
 
         String[] accountArray = mAccountList.toArray(new String[0]);
@@ -277,6 +283,14 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
 
     }
 
+    // ELYMON: the file listing of reloadAccounts, with a French label and only Microsoft accounts.
+    private void loadAccountList(){
+        mAccountList.clear();
+
+        mAccountList.add(getContext().getString(R.string.elymon_auth_add_account));
+        mAccountList.addAll(ElymonAccounts.listMicrosoftAccountNames());
+    }
+
     private void performLogin(MinecraftAccount minecraftAccount){
         // Logging in when there's no internet is useless. This should really be turned into a network callback though.
         if(!Tools.isOnline(getContext())){
@@ -288,7 +302,9 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
         if(minecraftAccount.isMicrosoft){
             if(System.currentTimeMillis() > minecraftAccount.expiresAt){
                 // Perform login only if needed
-                new MicrosoftBackgroundLogin(true, minecraftAccount.msaRefreshToken)
+                // ELYMON: through the Elythera Entra app; the refresh re-reads the account under
+                // the refresh lock. The refresh right before Play is ElymonSession.ensureFresh.
+                MicrosoftBackgroundLogin.refreshing(minecraftAccount)
                         .performLogin(mProgressListener, mDoneListener, mErrorListener);
             }
             return;
@@ -324,6 +340,8 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
         }else {
             // Get the current profile, or the first available profile if the wanted one is unavailable
             selectedAccount = PojavProfile.getCurrentProfileContent(getContext(), null);
+            // ELYMON: an account left out of the list (not Microsoft) is never selected behind the list's back.
+            if(selectedAccount != null && !mAccountList.contains(selectedAccount.username)) selectedAccount = null;
             int spinnerPosition = selectedAccount == null
                     ? mAccountList.size() <= 1 ? 0 : 1
                     : mAccountList.indexOf(selectedAccount.username);
