@@ -2,7 +2,9 @@ package com.kdt.mcgui;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -108,6 +110,7 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
     };
 
     private final ErrorListener mErrorListener = errorMessage -> {
+        if(isScreenGone()) return; // ELYMON: see isScreenGone()
         mLoginBarPaint.setColor(Color.RED);
         Context context = getContext();
         // ELYMON: a lost session (expired or revoked refresh token) offers to sign in again.
@@ -281,6 +284,18 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
         // Remove or add the behavior if needed
         setNoAccountBehavior();
 
+    }
+
+    // ELYMON: a login can end after the screen that started it was destroyed (rotation, dark
+    // mode): a dialog on that screen would crash (BadTokenException). MicrosoftBackgroundLogin
+    // has already logged the failure, and the stored account is left as it was.
+    private boolean isScreenGone(){
+        Context context = getContext();
+        while(context instanceof ContextWrapper && !(context instanceof Activity)){
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        return context instanceof Activity
+                && (((Activity) context).isFinishing() || ((Activity) context).isDestroyed());
     }
 
     // ELYMON: the file listing of reloadAccounts, with a French label and only Microsoft accounts.
