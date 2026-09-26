@@ -1,11 +1,13 @@
 package com.elythera.elymon.update;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
@@ -26,6 +28,7 @@ import com.elythera.elymon.ElymonLaunch;
 import com.elythera.elymon.ElymonNotice;
 
 import net.kdt.pojavlaunch.BuildConfig;
+import net.kdt.pojavlaunch.LauncherActivity;
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.lifecycle.ContextExecutor;
@@ -307,7 +310,7 @@ public final class ElymonUpdater {
                     .setNegativeButton(R.string.elymon_update_cancel, null));
             return;
         }
-        sJob = new Job(app, manifest);
+        sJob = new Job(activity.getApplication(), manifest);
         sJob.attach(activity);
         sJob.start();
     }
@@ -383,7 +386,7 @@ public final class ElymonUpdater {
         private static final int PHASE_VERIFY = 1;
         private static final int PHASE_INSTALL = 2;
 
-        private final Context mApp;
+        private final Application mApp;
         private final UpdateManifest mManifest;
         private final AtomicBoolean mCancelled = new AtomicBoolean(false);
         private volatile long mDone;
@@ -395,7 +398,39 @@ public final class ElymonUpdater {
         private ProgressBar mBar;
         private TextView mText;
 
-        Job(Context app, UpdateManifest manifest) {
+        /**
+         * Gives the progress dialog back to a launcher screen recreated while the job runs
+         * (rotation, dark mode): LauncherActivity only asks the updater on its first creation,
+         * and without the dialog the player could neither follow nor cancel the download.
+         */
+        private final Application.ActivityLifecycleCallbacks mReattach = new Application.ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityResumed(Activity activity) {
+                if (sJob == Job.this && mDialog == null && !mCancelled.get() && activity instanceof LauncherActivity) {
+                    attach(activity);
+                }
+            }
+
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+
+            @Override
+            public void onActivityStarted(Activity activity) {}
+
+            @Override
+            public void onActivityPaused(Activity activity) {}
+
+            @Override
+            public void onActivityStopped(Activity activity) {}
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {}
+        };
+
+        Job(Application app, UpdateManifest manifest) {
             mApp = app;
             mManifest = manifest;
         }
@@ -449,7 +484,9 @@ public final class ElymonUpdater {
             refresh();
         }
 
+        /** UI thread. */
         void start() {
+            mApp.registerActivityLifecycleCallbacks(mReattach);
             new Thread(this::run, "ElymonUpdateDownload").start();
         }
 
@@ -543,6 +580,7 @@ public final class ElymonUpdater {
 
         /** UI thread. problem: null when the installer took over, 0 when cancelled, else a message. */
         private void finish(Integer problem) {
+            mApp.unregisterActivityLifecycleCallbacks(mReattach);
             if (mDialog != null) {
                 mDialog.dismiss();
                 mDialog = null;
