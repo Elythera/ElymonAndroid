@@ -20,3 +20,7 @@ app_pojavlauncher/.cxx/
 /elymon-signing.properties
 *.jks
 !app_pojavlauncher/aamc_upload.jks
+*.keystore
+!app_pojavlauncher/debug.keystore
+*.p12
+*.pfx
