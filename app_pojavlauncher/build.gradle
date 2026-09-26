@@ -111,7 +111,7 @@ def elymonReadElytheraKey = {
     File keyFile = keyFilePath ? rootProject.file(keyFilePath) : rootProject.file('.elythera-key')
     if (!keyFile.isFile()) return [key: null, source: keyFile.path]
     String line = keyFile.readLines('UTF-8')
-            .collect { it.replace('﻿', '').trim() }
+            .collect { it.replace('\uFEFF', '').trim() }  // BOM left by some editors
             .find { !it.isEmpty() && !it.startsWith('#') }
     return [key: line, source: keyFile.path, file: keyFile]
 }
