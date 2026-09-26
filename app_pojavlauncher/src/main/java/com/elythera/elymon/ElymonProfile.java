@@ -39,12 +39,28 @@ public final class ElymonProfile {
      * LauncherPreferences.loadPreferences.
      *
      * @param versionId the version to launch, or null to keep the profile's (or the default)
-     * @throws RuntimeException when launcher_profiles.json cannot be read or written
+     * @throws RuntimeException when launcher_profiles.json cannot be written (an unreadable one is replaced)
      */
     @SuppressLint("ApplySharedPref") // commit() on purpose, see above
     public static synchronized void ensure(@NonNull Context context, @Nullable String versionId) {
-        LauncherProfiles.load();
-        MinecraftLauncherProfiles launcherProfiles = LauncherProfiles.mainProfileJson;
+        MinecraftLauncherProfiles launcherProfiles;
+        try {
+            LauncherProfiles.load();
+            launcherProfiles = LauncherProfiles.mainProfileJson;
+        } catch (RuntimeException e) {
+            // A damaged launcher_profiles.json (a write cut short, a full disk) would otherwise
+            // block Play for good, and crash the main menu, which loads it too. Elymon owns the
+            // only profile anyway: start again from an empty file, written below.
+            Log.w(TAG, "launcher_profiles.json illisible, il est recréé", e);
+            launcherProfiles = null;
+        }
+        if (launcherProfiles == null) {
+            launcherProfiles = new MinecraftLauncherProfiles();
+            LauncherProfiles.mainProfileJson = launcherProfiles;
+        }
+        if (launcherProfiles.profiles == null) {
+            launcherProfiles.profiles = new HashMap<>();
+        }
         Map<String, MinecraftProfile> profiles = launcherProfiles.profiles;
 
         MinecraftProfile existing = profiles.get(ElymonConfig.PROFILE_UUID);
