@@ -146,10 +146,37 @@ The **core** package owns:
 - `com/elythera/elymon/{ElymonLaunch,ElymonProfile,…}` (not `sync/` or `auth/`);
 - `res/values/elymon_core_strings.xml`.
 
-**Wave 2** (after integration and a device test)
+**Wave 2** (after wave 1 was merged and played on the S24 Ultra: fresh install through the app, sync from the CDN in about 30 s, Elythera sign-in, server joined)
 
-| Package | Owns |
-|---|---|
-| ui | Launcher layouts, `MainMenuFragment`, settings screens and XML, branding (icons, theme, names), about and licences |
-| controls | `assets/default.json`, controls install and upgrade, keybinding overlay content |
-| release | APK self-update, eligibility gate, redacted log export, CI workflows, README and NOTICE |
+Shared stubs committed before wave 2: `com.elythera.elymon.update.ElymonUpdater` (`checkOnStartup`, `checkNow`) and `com.elythera.elymon.support.ElymonLogs` (`share`). Only the release package implements them; ui only calls them.
+
+| Package | Branch | Owns |
+|---|---|---|
+| ui | `wip/ui` | See below |
+| controls | `wip/controls` | See below |
+| release | `wip/release` | See below |
+
+The **ui** package owns:
+- launcher layouts: `res/layout*/activity_pojav_launcher.xml`, `fragment_launcher.xml` and any new Elymon layout;
+- `LauncherActivity` and `MainMenuFragment`;
+- `com/kdt/mcgui/mcVersionSpinner.java` and `fragments/ProfileEditorFragment.java`, which become unreachable;
+- `prefs/**`, `prefs/screens/**` and `res/xml/pref_*.xml`;
+- branding:
+  - `res/mipmap*/`, `res/drawable*/` launcher art, `res/values*/colors.xml`, themes and styles;
+  - the upstream strings that name Amethyst in `res/values/strings.xml` and `values-fr/strings.xml`;
+- `com/elythera/elymon/ui/**` and `com/elythera/elymon/ElymonMemory.java`;
+- the memory-warning part of `Tools.java` (`Tools.java:~408-430`);
+- `res/values/elymon_ui_strings.xml`.
+
+The **controls** package owns:
+- `assets/default.json` and `assets/elymon/android-policy.json`, keybinding overlays only (`seedOptions` too);
+- `customcontrols/**`, `CustomControlsActivity.java`, `tasks/AsyncAssetManager.java`;
+- `com/elythera/elymon/controls/**` and `res/values/elymon_controls_strings.xml`.
+
+The **release** package owns:
+- `AndroidManifest.xml` and `app_pojavlauncher/build.gradle`;
+- `com/elythera/elymon/{update,support}/**`, `com/elythera/elymon/ElymonEligibility.java` and `ElymonLaunch.java`;
+- `utils/JREUtils.java`, `tasks/MinecraftDownloader.java` and `NewJREUtil.java`;
+- `res/xml/` provider paths other than `pref_*`;
+- `.github/**`, `README.md`, `NOTICE*` and `docs/elymon/RELEASE.md`;
+- `res/values/elymon_release_strings.xml`.
