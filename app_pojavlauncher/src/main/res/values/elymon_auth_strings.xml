@@ -45,6 +45,7 @@
 
     <!-- Xbox Live (XSTS XErr codes, like helios-core MicrosoftResponse.js) -->
     <string name="elymon_auth_xerr_banned">Ce compte Microsoft est suspendu par Xbox pour non-respect des standards de la communauté. Plus d\'informations sur enforcement.xbox.com.</string>
+    <string name="elymon_auth_xerr_parental_control">Ce compte Microsoft n\'a pas le droit de jouer en ligne. Un parent doit l\'autoriser dans les paramètres de la famille Microsoft (family.microsoft.com), puis réessaie.</string>
     <string name="elymon_auth_xerr_no_account">Aucun compte Xbox n\'est associé à ce compte Microsoft. Crée-en un sur xbox.com (ou connecte-toi une fois sur minecraft.net), puis réessaie.</string>
     <string name="elymon_auth_xerr_terms">Ce compte Microsoft n\'a pas encore accepté les conditions d\'utilisation de Xbox. Connecte-toi une fois sur xbox.com pour les accepter, puis réessaie.</string>
     <string name="elymon_auth_xerr_not_available">Ce compte Microsoft est rattaché à un pays où Xbox Live n\'est pas disponible. La connexion à Minecraft passe obligatoirement par ce service.</string>

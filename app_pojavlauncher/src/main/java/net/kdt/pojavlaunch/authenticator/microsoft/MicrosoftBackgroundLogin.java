@@ -84,6 +84,7 @@ public class MicrosoftBackgroundLogin {
         // Elythera fr_FR.toml), plus the other documented XErr codes.
         XSTS_ERRORS = new ArrayMap<>();
         XSTS_ERRORS.put(2148916227L, R.string.elymon_auth_xerr_banned);
+        XSTS_ERRORS.put(2148916229L, R.string.elymon_auth_xerr_parental_control);
         XSTS_ERRORS.put(2148916233L, R.string.elymon_auth_xerr_no_account);
         XSTS_ERRORS.put(2148916234L, R.string.elymon_auth_xerr_terms);
         XSTS_ERRORS.put(2148916235L, R.string.elymon_auth_xerr_not_available);
