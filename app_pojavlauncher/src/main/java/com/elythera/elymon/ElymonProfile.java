@@ -1,5 +1,6 @@
 package com.elythera.elymon;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -40,6 +41,7 @@ public final class ElymonProfile {
      * @param versionId the version to launch, or null to keep the profile's (or the default)
      * @throws RuntimeException when launcher_profiles.json cannot be read or written
      */
+    @SuppressLint("ApplySharedPref") // commit() on purpose, see above
     public static synchronized void ensure(@NonNull Context context, @Nullable String versionId) {
         LauncherProfiles.load();
         MinecraftLauncherProfiles launcherProfiles = LauncherProfiles.mainProfileJson;

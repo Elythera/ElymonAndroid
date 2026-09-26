@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Elymon core package: Play flow, Java runtime. French, in the default folder on purpose (DESIGN.md). -->
-<resources>
+<!-- Elymon core package: Play flow, Java runtime. French, in the default folder on purpose (DESIGN.md):
+     every locale, French included, uses these texts, so there is nothing to translate. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Progress lines (ProgressLayout) -->
     <string name="elymon_progress_preparing">Préparation d\'Elymon…</string>
     <string name="elymon_progress_session">Vérification du compte Microsoft…</string>
