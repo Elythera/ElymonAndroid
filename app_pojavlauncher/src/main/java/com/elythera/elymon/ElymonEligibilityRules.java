@@ -23,13 +23,14 @@ public final class ElymonEligibilityRules {
     public static final int MIN_GLES_VERSION = 0x00030002;
 
     /**
-     * Disk space a first install takes, measured for the 2026-09 pack: about 524 MiB from the
-     * Elythera CDN after the Android policy, about 348 MiB of Minecraft files once vanilla
-     * music is trimmed (ElymonAssetTrim: 267 MiB of assets, the 26 MiB client, 55 MiB of
-     * libraries), Java 21 unpacked (about 110 MiB), rounded up for the runtime data the
-     * game writes at its first start (Showdown extraction, caches).
+     * Disk space a first install takes, for the 2026-09-26 pack: 824 MiB of pack files after
+     * the Android policy (523.6 MiB downloaded, identical contents then copied locally, from
+     * tools/elymon/test-sync.sh), 348 MiB of Minecraft files once vanilla music is trimmed
+     * (ElymonAssetTrim: 267 MiB of assets, the 26 MiB client, 55 MiB of libraries), and two
+     * estimates: Java 21 unpacked (about 110 MiB) and what the game writes at its first start
+     * (Showdown extraction, caches, logs: about 200 MiB).
      */
-    public static final long FIRST_INSTALL_ESTIMATE_BYTES = 1229L * MIB;
+    public static final long FIRST_INSTALL_ESTIMATE_BYTES = 1482L * MIB;
     /** Free space a first install needs: max(3 GiB, 1 GiB + estimate). */
     public static final long MIN_FREE_FIRST_INSTALL_FLOOR = 3L * GIB;
     public static final long FREE_MARGIN_BYTES = 1L * GIB;
