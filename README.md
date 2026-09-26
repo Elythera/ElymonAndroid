@@ -1,153 +1,114 @@
-<h1 align="center">Angel Aura Amethyst</h1>
+# Elymon Android
 
-<img src="https://github.com/AngelAuraMC/Amethyst-Android/blob/v3_openjdk/app_pojavlauncher/src/main/assets/amethyst.png" align="left" width="130" height="130" alt="Amethyst logo">
+Elymon Android est l'application Android du serveur **Elymon**, le modpack Cobblemon de la communauté [Elythera](https://elythera.com). Elle installe le pack, le tient à jour et lance Minecraft: Java Edition 1.21.1 avec NeoForge, directement sur un téléphone ou une tablette.
 
-[![Android CI](https://github.com/AngelAuraMC/Amethyst-Android/workflows/Android%20CI/badge.svg)](https://github.com/AngelAuraMC/Amethyst-Android/actions)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/AngelAuraMC/Amethyst-Android)](https://github.com/AngelAuraMC/Amethyst-Android/actions)
-[![Crowdin](https://badges.crowdin.net/pojavlauncher/localized.svg)](https://crowdin.com/project/pojavlauncher)
-[![Discord](https://img.shields.io/discord/724163890803638273.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/5ptqkyZxEy)
+C'est un fork d'[Amethyst-Android](https://github.com/AngelAuraMC/Amethyst-Android) (AngelAuraMC), lui-même issu de [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher) et de [Boardwalk](https://github.com/zhuowei/Boardwalk). Tout le mérite de faire tourner Java et Minecraft sur Android leur revient.
 
-*From [Boardwalk](https://github.com/zhuowei/Boardwalk)'s ashes and [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher)'s ruined reputation, here comes Amethyst!*
+> **Elymon Android n'est pas un produit officiel Minecraft. Il n'est ni approuvé par Mojang ou Microsoft, ni associé à eux.**
+> *NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.*
 
-Amethyst is a launcher that allows you to play Minecraft: Java Edition on your Android and [iOS](https://github.com/AngelAuraMC/Amethyst-iOS) devices.
+## Pour les joueurs
 
-For more details, check out our [wiki](https://wiki.angelauramc.dev)!
+### Ce qu'il faut
 
-## Table of Contents
+- Un compte Microsoft qui **possède Minecraft: Java Edition**. Les comptes hors ligne et les démos ne sont pas acceptés.
+- Android 10 ou plus récent, sur un processeur 64 bits (arm64).
+- **6 Go de RAM au minimum, 8 Go recommandés.** Elymon compte plus de cent mods. Sur un téléphone de 4 Go, l'application refuse de lancer la partie ; sur un téléphone de 6 Go, elle prévient une fois que l'expérience sera dégradée.
+- Une puce graphique compatible OpenGL ES 3.2, soit presque tous les téléphones récents.
+- Environ **3 Go d'espace libre** pour la première installation, puis 1 Go de marge.
+- Une connexion Wi-Fi pour la première installation : environ 520 Mo depuis Elythera, 350 Mo depuis les serveurs de Mojang et 30 Mo pour Java. L'application demande confirmation avant un gros téléchargement, et prévient quand la connexion est limitée (données mobiles).
 
-* [Introduction](#introduction)
-* [Getting Amethyst](#getting-amethyst)
-* [Building](#building)
-    * [Quick Build (Recommended)](#quick-build-recommended)
-    * [Detailed Build](#detailed-build)
-* [Current Status](#current-status)
-* [Known Issues](#known-issues)
-* [FAQ](#faq)
-* [Contributing](#contributing)
-* [Support](#support)
-* [License](#license)
-* [Credits & Dependencies](#credits--dependencies)
-* [Roadmap](#roadmap)
+### Installer
 
-## Introduction
+1. Télécharge l'APK d'Elymon depuis le site d'Elythera ou depuis la page *Releases* de ce dépôt. Ne l'installe jamais depuis un autre site.
+2. Ouvre le fichier. Android demande d'autoriser l'installation depuis ton navigateur ou ton gestionnaire de fichiers : accepte pour cette fois.
+3. Ouvre Elymon, ajoute ton compte Microsoft, puis appuie sur **Jouer**.
 
-* Amethyst is a Minecraft: Java Edition launcher for Android and iOS based on [Boardwalk](https://github.com/zhuowei/Boardwalk) and [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher)
-* This launcher can launch almost all available Minecraft versions ranging from rd-132211 to 26.3-snapshot-1.
-* Modding via Forge and Fabric are also supported.
-* This repository contains source code for Android. For iOS/iPadOS, check out [Amethyst-iOS](https://github.com/AngelAuraMC/Amethyst-iOS).
+La première partie installe le pack, Minecraft et Java : compte quelques minutes. Les parties suivantes ne téléchargent que ce qui a changé.
 
-## Getting Amethyst
+### Mises à jour
 
-You can get Amethyst via two methods:
+- **Le pack** (mods, configuration) se met à jour tout seul à chaque appui sur **Jouer**.
+- **L'application** vérifie au démarrage s'il existe une nouvelle version et propose de l'installer. Android demande alors d'autoriser Elymon à installer des applications (*Installer des applis inconnues*), une seule fois. Avant l'installation, l'application vérifie la taille, la somme de contrôle et la signature de l'équipe Elythera. Si une version devient obligatoire, la partie est refusée jusqu'à la mise à jour.
 
-1. **Releases:** Download the latest prebuilt app from [nightly.link](https://nightly.link/AngelAuraMC/Amethyst-Android/workflows/android/v3_openjdk/app-debug%20%28recommended%29.zip) or select an older version from our [automatic builds](https://github.com/AngelAuraMC/Amethyst-Android/actions).
-2. **Build from Source:** Follow the [building instructions](#building) below.
+### Ce qu'Elymon Android ne fait pas
 
-## Building
+- Pas d'autre version de Minecraft, pas d'autre modpack, pas d'installateur de mods, pas de navigateur de modpacks.
+- Pas de compte hors ligne ni de démo.
+- Quelques mods du pack PC sont écartés sur Android parce qu'ils ne peuvent pas y fonctionner, dont Distant Horizons, Iris et les shaders, et Cobblemon Vocalized. Le monde tutoriel est aussi écarté.
+- La musique d'origine de Minecraft n'est pas téléchargée (545 Mo) : Elymon a la sienne. Le mode de musique « vanilla » du mod Elymon reste donc muet.
+- Pas de Google Play : l'application se télécharge et se met à jour depuis Elythera.
+- Pas de publicité, pas de statistiques d'usage.
 
-### Quick Build (Recommended)
+### Les services contactés
 
-The easiest way to build Amethyst is to use the pre-built JREs provided by our CI.
+- `cdn.elythera.com` : le pack Elymon, les mises à jour de l'application.
+- Microsoft, Xbox Live et les services Minecraft : la connexion à ton compte.
+- Les serveurs de Mojang : Minecraft, ses bibliothèques et ses sons.
+- GitHub (AngelAuraMC) : Java 21 pour Android, vérifié par sa somme de contrôle.
+- Maven Central : quelques bibliothèques remplacées pour Android.
+- `mc-heads.net` : la tête de ton personnage, affichée à côté de ton compte.
+- Le serveur Elymon, une fois en jeu.
 
-1. Clone the repository: `git clone --recursive https://github.com/AngelAuraMC/Amethyst-Android.git`
-2. Build the launcher: `./gradlew :app_pojavlauncher:assembleDebug` (Use `gradlew.bat` on Windows)
+Tes jetons de connexion restent sur l'appareil : ils ne sont ni sauvegardés dans le cloud, ni écrits dans les journaux.
 
-The built APK will be located in `app_pojavlauncher/build/outputs/apk/debug/`.
+### Un problème ?
 
-### Detailed Build
+Utilise l'envoi des journaux de l'application (« Envoyer les journaux »). Elle prépare une archive avec les journaux du lanceur et du jeu, le dernier rapport de plantage et une fiche sur ton appareil, **sans tes jetons de connexion ni la clé Elythera**, et te laisse choisir où l'envoyer. Joins-la à ton message au support d'Elythera ou à un [ticket](https://github.com/Elythera/ElymonAndroid/issues/new/choose).
 
-If you need more control over the build process, follow these steps:
+Les mondes solo, les captures d'écran et les réglages vivent dans le stockage de l'application : **désinstaller Elymon ou vider son stockage les efface.**
 
-1. **Java Runtime Environment (JRE):** Download the `jre8-pojav` artifact from our [CI auto builds](https://github.com/AngelAuraMC/openjdk-build-multiarch/actions).  This package contains pre-built JREs for all supported architectures.  If you need to build the JRE yourself, follow the instructions in the [android-openjdk-build-multiarch](https://github.com/AngelAuraMC/openjdk-build-multiarch) repository.
+## Pour les contributeurs
 
-2. **LWJGL:** The build instructions for the custom LWJGL are available over the [LWJGL repository](https://github.com/AngelAuraMC/lwjgl3).
+Avant toute modification, lis [`docs/elymon/DESIGN.md`](docs/elymon/DESIGN.md). Il contient les règles du fork : Java 8, API 29, textes en français, un commentaire `// ELYMON:` sur chaque fichier d'origine touché, aucun secret dans les journaux. Il décrit aussi l'architecture et la répartition des fichiers.
 
-3. **Language List:** Because languages are auto-added by Crowdin, you need to run the language list generator before building. In the project directory, run:
-   * Linux/macOS:
-     ```bash
-     chmod +x scripts/languagelist_updater.sh
-     bash scripts/languagelist_updater.sh
-     ```
-   * Windows:
-     ```batch
-     scripts\languagelist_updater.bat
-     ```
+### Construire
 
-4. **Build GLFW stub:** `./gradlew :jre_lwjgl3glfw:build`
+Il faut :
+- un JDK 21 complet (avec `javac`) pour Gradle, et un JDK 8 pour `MioLibPatcher` ;
+- le SDK Android avec les plateformes `android-37.0` et `android-36.1`, le NDK `27.3.13750724` et CMake `3.22.1` ;
+- les sous-modules : `git submodule update --init --recursive`. `androidnsbypass` a une URL SSH ; sans clé SSH, ajoute `git config url."https://github.com/".insteadOf git@github.com:`.
 
-5. **Build the launcher:** `./gradlew :app_pojavlauncher:assembleDebug` (Replace `gradlew` with `gradlew.bat` on Windows).
+Commandes exactes sur la machine de l'équipe :
 
-## Current Status
+```
+export JAVA_HOME=$HOME/.gradle/jdks/eclipse_adoptium-21-amd64-linux.2 ANDROID_HOME=$HOME/Android/Sdk
+flock $HOME/Documents/ELYTHERA/DEV/ElymonAndroid-wt/.gradle.lock \
+  ./gradlew :app_pojavlauncher:compileDebugJavaWithJavac --no-daemon \
+  "-Porg.gradle.java.installations.paths=$HOME/Android/jdk/jdk8u504-b01,$HOME/.gradle/jdks/eclipse_adoptium-21-amd64-linux.2"
+```
 
-* [x] OpenJDK 8 Mobile port: ARM32, ARM64, x86, x86_64
-* [x] OpenJDK 17 Mobile port: ARM32, ARM64, x86, x86_64
-* [x] OpenJDK 21 Mobile port: ARM32, ARM64, x86, x86_64
-* [x] Headless mod installer
-* [x] Mod installer with GUI
-* [x] OpenGL in OpenJDK environment
-* [x] OpenAL (works on most devices)
-* [x] Support for Minecraft 1.12.2 and below
-* [x] Support for Minecraft 1.13 and above
-* [x] Support for Minecraft 1.17 (22w13a) and above
-* [x] Game surface zooming
-* [x] New input pipe rewritten to native code
-* [x] Rewritten entire controls system
-* [ ] More to come!
+- Remplace `compileDebugJavaWithJavac` par `assembleDebug` pour un APK complet : `app_pojavlauncher/build/outputs/apk/debug/app_pojavlauncher-debug.apk`.
+- `flock` évite que deux builds parallèles épuisent la mémoire.
+- Chaque build réécrit des fichiers suivis sous `app_pojavlauncher/src/main/assets/components/`. Ne les commite jamais : lance `git checkout -- app_pojavlauncher/src/main/assets/components` avant chaque commit.
+- Sans clé Elythera (`.elythera-key` ou `ELYTHERA_KEY`), un build de debug avertit seulement, et le handshake avec ElytheraMod n'est pas signé.
+- Un APK de debug est signé avec une clé publique : ne le distribue jamais aux joueurs.
 
-## Known Issues
+### Tester
 
-See our [issue tracker](https://github.com/AngelAuraMC/Amethyst-Android/issues) for a list of known issues and their current status.
+Deux suites s'exécutent sur la machine, sans Android ni Gradle :
 
-## FAQ
+```
+bash tools/elymon/test-sync.sh      # moteur de synchronisation (serveur HTTP local, distribution réelle)
+bash tools/elymon/test-release.sh   # caviardage des journaux, flux de mise à jour, éligibilité, élagage des assets
+```
 
-See our [wiki](https://wiki.angelauramc.dev/) for more information.
+La CI (`.github/workflows/elymon.yml`) les lance à chaque push et pull request vers `elymon`, puis construit l'APK de debug.
 
-## Contributing
+### Publier une version
 
-Contributions are welcome! We welcome any type of contribution, not only code. For example, you can help improve the [wiki](https://github.com/AngelAuraMC/angelauramc.github.io/), contribute to the [translations](https://crowdin.com/project/pojavlauncher), or submit bug reports and feature requests.
+Voir [`docs/elymon/RELEASE.md`](docs/elymon/RELEASE.md) : numéros de version, tag, CI, clé de signature, publication de l'APK et de `latest.json` sur le CDN, retour arrière.
 
-Any code change should be submitted as a pull request. The description should explain what the code does and give steps to execute it.
+## Licence et crédits
 
-## Support
+Elymon Android est distribué sous la **GNU LGPL 3.0**, comme Amethyst : voir [`LICENSE`](LICENSE), qui complète la GNU GPL 3.0 ([`COPYING`](COPYING)). Le code ajouté par Elythera est publié sous la même licence.
 
-For support, please join our [Discord server](https://discord.gg/5ptqkyZxEy).
+**Offre de source** : pour chaque APK publié, le code source complet correspondant (scripts de build et CI compris) est celui du tag `v<version>` de ce dépôt. Les composants tiers et leurs licences sont listés dans [`NOTICE`](NOTICE), avec l'offre écrite pour les composants sous GPL et LGPL.
 
-## License
+Merci à :
+- [Amethyst-Android](https://github.com/AngelAuraMC/Amethyst-Android) et AngelAuraMC : le lanceur, les moteurs de rendu, Java pour Android ;
+- [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher) et [Boardwalk](https://github.com/zhuowei/Boardwalk), à l'origine de tout ;
+- [MobileGlues](https://github.com/MobileGL-Dev/MobileGlues), [Mesa](https://mesa3d.org), [ANGLE](https://chromium.googlesource.com/angle/angle), [LWJGL](https://www.lwjgl.org), [OpenAL Soft](https://github.com/kcat/openal-soft), [SDL](https://www.libsdl.org), [bytehook](https://github.com/bytedance/bhook), [TouchController](https://github.com/TouchController/TouchController) et les autres projets listés dans `NOTICE` ;
+- l'équipe [Cobblemon](https://cobblemon.com) et tous les auteurs des mods du pack Elymon.
 
-Amethyst is licensed under [GNU LGPLv3](https://github.com/AngelAuraMC/Amethyst-Android/blob/v3_openjdk/LICENSE).
-
-## Credits & Dependencies
-
-* [Boardwalk](https://github.com/zhuowei/Boardwalk) (JVM Launcher): Unknown License/[Apache License 2.0](https://github.com/zhuowei/Boardwalk/blob/master/LICENSE) or GNU GPLv2.
-* [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher): [GLGPL](https://github.com/PojavLauncherTeam/PojavLauncher/blob/v3_openjdk/LICENSE)
-* Android Support Libraries: [Apache License 2.0](https://android.googlesource.com/platform/prebuilts/maven_repo/android/+/master/NOTICE.txt).
-* [GL4ES](https://github.com/AngelAuraMC/gl4es): [MIT License](https://github.com/ptitSeb/gl4es/blob/master/LICENSE).
-* [MobileGlues](https://github.com/MobileGL-Dev/MobileGlues): [LGPL-2.1 License](https://github.com/MobileGL-Dev/MobileGlues/blob/dev-es/LICENSE).
-* [Krypton Wrapper](https://github.com/BZLZHH/NG-GL4ES): [MIT License](https://github.com/BZLZHH/NG-GL4ES/blob/main/LICENSE)
-* [ANGLE](https://chromium.googlesource.com/angle/angle): [All Rights Reserved](app_pojavlauncher/src/main/assets/licenses/ANGLE_LICENSE).
-* [OpenJDK](https://github.com/AngelAuraMC/openjdk-multiarch-jdk8u): [GNU GPLv2 License](https://openjdk.java.net/legal/gplv2+ce.html).
-* [LWJGL3](https://github.com/AngelAuraMC/lwjgl3): [BSD-3 License](https://github.com/LWJGL/lwjgl3/blob/master/LICENSE.md).
-* [LWJGLX](https://github.com/AngelAuraMC/lwjglx) (LWJGL2 API compatibility layer for LWJGL3): unknown license.
-* [Mesa 3D Graphics Library](https://gitlab.freedesktop.org/mesa/mesa): [MIT License](https://docs.mesa3d.org/license.html).
-* [bhook](https://github.com/bytedance/bhook) (Used for exit code trapping): [MIT license](https://github.com/bytedance/bhook/blob/main/LICENSE).
-* [libepoxy](https://github.com/anholt/libepoxy): [MIT License](https://github.com/anholt/libepoxy/blob/master/COPYING).
-* [virglrenderer](https://github.com/AngelAuraMC/virglrenderer): [MIT License](https://gitlab.freedesktop.org/virgl/virglrenderer/-/blob/master/COPYING).
-* [OpenAL-Soft](https://github.com/kcat/openal-soft): [GNU GPLv2](app_pojavlauncher/src/main/assets/licenses/OPENAL-SOFT_GPL2)
-  * [oboe](https://github.com/google/oboe): [Apache License 2.0](app_pojavlauncher/src/main/assets/licenses/OBOE_APACHE2).
-  * [pfffft](https://bitbucket.org/jpommier/pffft/src/master/): [ARR](app_pojavlauncher/src/main/assets/licenses/PFFFT_LICENSE)
-* [SDL3](https://github.com/libsdl-org/SDL): [zlib License](https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt)
-* [sdl2-compat](https://github.com/libsdl-org/sdl2-compat): [zlib License](https://github.com/libsdl-org/sdl2-compat/blob/main/LICENSE.txt)
-* Thanks to [MCHeads](https://mc-heads.net) for providing Minecraft avatars.
-
-## Roadmap
-
-We are currently focusing on:
-
-* Exploring new rendering technologies.
-
-Future plans include:
-
-* Improving stability and performance.
-* Enhancing the mod installation experience.
-
-We welcome community feedback and suggestions for our roadmap.  Please feel free to open a feature request in our [issue tracker](https://github.com/AngelAuraMC/Amethyst-Android/issues).
+Minecraft est une marque de Mojang AB. Elymon Android n'embarque aucun fichier de Minecraft : le jeu est téléchargé depuis les serveurs de Mojang avec ton propre compte.
