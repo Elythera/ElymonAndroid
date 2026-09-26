@@ -20,6 +20,8 @@ import com.elythera.elymon.sync.SyncException;
 import com.elythera.elymon.sync.SyncListener;
 import com.elythera.elymon.sync.SyncOptions;
 import com.elythera.elymon.sync.SyncResult;
+import com.elythera.elymon.update.ElymonUpdater;
+import com.elythera.elymon.update.UpdateManifest;
 import com.kdt.mcgui.ProgressLayout;
 
 import net.kdt.pojavlaunch.BuildConfig;
@@ -48,8 +50,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * What the Play button does in Elymon (DESIGN.md "Play flow"):
- * 1. refuse while the :game process is alive, and on a device that cannot run Elymon
- *    ({@link ElymonEligibility});
+ * 1. refuse while the :game process is alive, on a device that cannot run Elymon
+ *    ({@link ElymonEligibility}) and when the self-update feed requires a newer app;
  * 2. refresh the Microsoft session;
  * 3. sync the pack from the Elythera distribution, with progress in ProgressLayout;
  * 4. gate on the distribution's requires and availability;
@@ -120,6 +122,12 @@ public final class ElymonLaunch {
 
             // Before the first byte of a sync: RAM, OpenGL ES and free space.
             if (!ElymonEligibility.check(app)) {
+                return;
+            }
+            // A build below the feed's minVersionCode must update before playing.
+            UpdateManifest requiredUpdate = ElymonUpdater.requiredUpdate(app);
+            if (requiredUpdate != null) {
+                ElymonUpdater.offerRequiredUpdate(requiredUpdate);
                 return;
             }
 
@@ -292,7 +300,7 @@ public final class ElymonLaunch {
     }
 
     /** Whether this app's :game process (MainActivity, GameService) is running. */
-    static boolean isGameProcessAlive(Context context) {
+    public static boolean isGameProcessAlive(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager == null) return false;
         // Since API 22 this lists only the caller's own processes.
@@ -321,7 +329,7 @@ public final class ElymonLaunch {
     }
 
     /** "350 Mo", "1,2 Go". */
-    static String formatSize(Context context, long bytes) {
+    public static String formatSize(Context context, long bytes) {
         double megabytes = Math.max(0, bytes) / (1024.0 * 1024.0);
         if (megabytes >= 1024.0) {
             return context.getString(R.string.elymon_size_gb, String.format(Locale.FRANCE, "%.1f", megabytes / 1024.0));
