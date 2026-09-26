@@ -134,9 +134,9 @@ Only the owner of a file edits it during a wave. Shared API stubs (`ElymonConfig
 
 | Package | Branch | Owns |
 |---|---|---|
-| core | `elymon/core` | See below |
-| sync | `elymon/sync` | `com/elythera/elymon/sync/**` (implementation); `assets/elymon/android-policy.json`; `tools/elymon/test-sync.sh` and its host tests under `app_pojavlauncher/src/test/java/com/elythera/elymon/sync/` |
-| auth | `elymon/auth` | `net/kdt/pojavlaunch/authenticator/**`; `fragments/MicrosoftLoginFragment.java`, `SelectAuthFragment.java`, `LocalLoginFragment.java`; `com/kdt/mcgui/mcAccountSpinner.java`; `com/elythera/elymon/auth/**`; `res/values/elymon_auth_strings.xml`; auth layouts |
+| core | `wip/core` | See below |
+| sync | `wip/sync` | `com/elythera/elymon/sync/**` (implementation); `assets/elymon/android-policy.json`; `tools/elymon/test-sync.sh` and its host tests under `app_pojavlauncher/src/test/java/com/elythera/elymon/sync/` |
+| auth | `wip/auth` | `net/kdt/pojavlaunch/authenticator/**`; `fragments/MicrosoftLoginFragment.java`, `SelectAuthFragment.java`, `LocalLoginFragment.java`; `com/kdt/mcgui/mcAccountSpinner.java`; `com/elythera/elymon/auth/**`; `res/values/elymon_auth_strings.xml`; auth layouts |
 
 The **core** package owns:
 - `app_pojavlauncher/build.gradle` and `src/main/jni/Application.mk`;
