@@ -776,14 +776,18 @@ final class SyncSession {
 
     /**
      * Deletes what this engine deposited earlier and the distribution no longer
-     * places, when its bytes are still the deposited ones. Never from a cached
-     * distribution, never while the game runs, never a protected path, never
-     * outside the instance (versions/ and libraries/ are left alone).
+     * places, when its bytes are still the deposited ones. Never while the game
+     * runs, never a protected path, never outside the instance (versions/ and
+     * libraries/ are left alone). From a cached distribution only mods/ is
+     * pruned, as the desktop's mods deployment does: an update that stopped
+     * halfway can leave the old and the new jar of one mod side by side, and FML
+     * refuses to start on a duplicate mod id, so that cleanup cannot wait for
+     * the network to come back.
      */
     private void prune(Prepared p, List<Check> checks, ManagedManifest managed) throws SyncException {
-        if (p.fromCache) {
-            result.warnings.add("nothing pruned: distribution read from the cache");
-            return;
+        boolean modsOnly = p.fromCache;
+        if (modsOnly) {
+            result.warnings.add("distribution read from the cache: only mods/ is pruned");
         }
         if (!o.allowPrune) {
             result.warnings.add("nothing pruned: not allowed by the caller");
@@ -797,6 +801,9 @@ final class SyncSession {
         }
         List<String> candidates = new ArrayList<String>();
         for (String path : managed.paths()) {
+            if (modsOnly && !PathGuard.fold(path).startsWith("mods/")) {
+                continue;
+            }
             if (!planned.contains(PathGuard.fold(path))) {
                 candidates.add(path);
             }

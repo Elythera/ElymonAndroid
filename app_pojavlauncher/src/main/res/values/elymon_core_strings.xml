@@ -56,4 +56,7 @@
 
     <!-- Java runtime pin (NewJREUtil); %1$d: Java version -->
     <string name="elymon_jre_checksum_mismatch">Le fichier de Java %1$d téléchargé ne correspond pas à celui attendu (somme de contrôle différente) : il a été supprimé. Réessaie ; si le problème continue, préviens l\'équipe Elythera.</string>
+    <string name="elymon_maintenance_title">Elymon est en maintenance</string>
+    <string name="elymon_maintenance_message">Le serveur Elymon est en maintenance. Réessaie un peu plus tard.</string>
+    <string name="elymon_policy_missing">Cette version de l\'application est incomplète : il lui manque la liste des mods à écarter sur Android. Réinstalle Elymon depuis elythera.com.</string>
 </resources>

@@ -473,10 +473,15 @@ final class EndToEndSyncTest {
     }
 
     private static void cacheFallback() throws Exception {
-        section("(b7) server down: cached distribution, no pruning");
+        section("(b7) server down: cached distribution, only mods/ pruned");
         TestSupport.write(inst("resourcepacks/Old-v1.zip"), OLD);
+        // A jar left behind by an update that stopped before pruning: FML would crash on
+        // the duplicate mod id, so it goes even while the distribution comes from the cache.
+        byte[] staleJar = "stale jar".getBytes(StandardCharsets.UTF_8);
+        TestSupport.write(inst("mods/stale-1.0.jar"), staleJar);
         JsonObject manifest = JsonParser.parseString(TestSupport.readText(inst(ManagedManifest.FILE_NAME))).getAsJsonObject();
         manifest.getAsJsonObject("files").add("resourcepacks/Old-v1.zip", hashes(TestSupport.md5(OLD)));
+        manifest.getAsJsonObject("files").add("mods/stale-1.0.jar", hashes(TestSupport.md5(staleJar)));
         TestSupport.write(inst(ManagedManifest.FILE_NAME), manifest.toString());
         byte[] cacheBefore = TestSupport.read(new File(work, "distribution.json"));
 
@@ -484,8 +489,9 @@ final class EndToEndSyncTest {
         o.distributionUrl = "http://127.0.0.1:" + closedPort() + "/distribution.json";
         SyncResult res = ElymonSync.run(o, new TestSupport.Recorder());
         check(res.distributionFromCache, "distribution read from the cache");
-        equal(0, res.filesPruned, "no pruning from a cached distribution");
-        check(inst("resourcepacks/Old-v1.zip").isFile(), "claimed file kept");
+        equal(1, res.filesPruned, "from a cached distribution only the stale mod jar is pruned");
+        check(!inst("mods/stale-1.0.jar").exists(), "stale mod jar removed while offline");
+        check(inst("resourcepacks/Old-v1.zip").isFile(), "claimed non-mod file kept while offline");
         equal("neoforge-21.1.249", res.versionId, "version id from the cached manifest");
         equal(0L, res.bytesDownloaded, "nothing downloaded");
         check(!res.meta.maintenanceActive, "maintenance never active from the cache");

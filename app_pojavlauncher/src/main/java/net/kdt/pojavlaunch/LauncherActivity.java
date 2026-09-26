@@ -156,7 +156,9 @@ public class LauncherActivity extends BaseActivity {
         // Allow starting the add account only from the main menu, should it be moved to fragment itself ?
         if(!(fragment instanceof MainMenuFragment)) return false;
 
-        Tools.swapFragment(this, SelectAuthFragment.class, SelectAuthFragment.TAG, null);
+        // ELYMON: Microsoft is the only account type, so skip the method chooser
+        // (it would only flash for a frame before forwarding to the sign-in).
+        Tools.swapFragment(this, MicrosoftLoginFragment.class, MicrosoftLoginFragment.TAG, null);
         return false;
     };
 

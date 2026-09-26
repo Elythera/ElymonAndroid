@@ -112,7 +112,7 @@ public final class ElymonLaunch {
 
             ProgressLayout.setProgress(PROGRESS_KEY, 0, R.string.elymon_progress_session);
             try {
-                ElymonSession.ensureFresh(account);
+                ElymonSession.ensureFresh(app, account);
             } catch (IOException e) {
                 // The message is the auth package's (French, meant for the player, secret-free:
                 // ElymonAuthException): it says whether to retry or to add the account again.
@@ -149,7 +149,7 @@ public final class ElymonLaunch {
         }
     }
 
-    private static SyncOptions syncOptions(Context app) {
+    private static SyncOptions syncOptions(Context app) throws SyncException {
         SyncOptions options = new SyncOptions();
         options.gameHome = new File(Tools.DIR_GAME_HOME);
         options.minecraftDir = new File(Tools.DIR_GAME_NEW);
@@ -161,19 +161,29 @@ public final class ElymonLaunch {
         // Checked again right before the sync starts: files in use are never pruned.
         options.allowPrune = !isGameProcessAlive(app);
         options.userAgent = "ElymonAndroid/" + BuildConfig.VERSION_NAME;
+        // The engine keeps built-in copies of its texts; the elymon_sync_* resources win.
+        options.text = key -> {
+            int id = app.getResources().getIdentifier("elymon_sync_" + key, "string", app.getPackageName());
+            return id == 0 ? null : app.getString(id);
+        };
         return options;
     }
 
-    private static String readPolicy(Context app) {
+    /**
+     * The Android policy is part of the APK. Without it the sync would install the mods
+     * that cannot run on Android (Distant Horizons, Iris...), so a missing asset stops
+     * Play instead of falling back to an empty policy.
+     */
+    private static String readPolicy(Context app) throws SyncException {
         try (InputStream in = app.getAssets().open(POLICY_ASSET)) {
             return Tools.read(in);
         } catch (IOException e) {
-            Log.w(TAG, POLICY_ASSET + " is missing, syncing without an Android policy");
-            return "{}";
+            Log.e(TAG, POLICY_ASSET + " is missing from the APK");
+            throw new SyncException(app.getString(R.string.elymon_policy_missing), e);
         }
     }
 
-    /** Distribution gates, in the desktop's order: requires, then availability. */
+    /** Distribution gates, in the desktop's order: requires, then maintenance, then availability. */
     private static boolean passesGates(Context app, @Nullable ServerMeta meta) {
         if (meta == null) {
             return true;
@@ -189,6 +199,12 @@ public final class ElymonLaunch {
                     withOperatorMessage(app.getString(R.string.elymon_update_required_android,
                             BuildConfig.VERSION_NAME, meta.requiresAndroid.trim()), meta.requiresMessage),
                     meta.requiresUrl, null);
+            return false;
+        }
+        if (meta.maintenanceActive) {
+            String message = Tools.isValidString(trimmed(meta.maintenanceMessage)) ? meta.maintenanceMessage.trim()
+                    : app.getString(R.string.elymon_maintenance_message);
+            notice(app, R.string.elymon_maintenance_title, message, meta.maintenanceUrl, null);
             return false;
         }
         if (!meta.available) {

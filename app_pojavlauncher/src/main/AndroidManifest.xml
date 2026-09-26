@@ -30,6 +30,7 @@
     <application
         android:name=".PojavApplication"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/elymon_data_extraction_rules"
         android:allowNativeHeapPointerTagging="false"
         android:appCategory="game"
         android:hasFragileUserData="true"
