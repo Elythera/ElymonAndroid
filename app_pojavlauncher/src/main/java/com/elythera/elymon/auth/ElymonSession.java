@@ -5,6 +5,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.kdt.mcgui.ProgressLayout;
+
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.authenticator.microsoft.MicrosoftBackgroundLogin;
 import net.kdt.pojavlaunch.value.MinecraftAccount;
@@ -133,6 +135,9 @@ public final class ElymonSession {
                 }
                 Log.w(TAG, "Session refresh failed: " + failure.getKind());
                 throw new ElymonAuthException(failure.getKind(), failure.toString(context), failure.getCause());
+            } finally {
+                // The steps were shown in the progress bar; a task left there would block the next Play.
+                ProgressLayout.clearProgress(ProgressLayout.AUTHENTICATE_MICROSOFT);
             }
         }
     }
