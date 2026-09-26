@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.elythera.elymon.ElymonGameArgs;
+import com.elythera.elymon.ElymonMemory;
 import com.oracle.dalvik.*;
 import java.io.*;
 import java.util.*;
@@ -389,7 +390,8 @@ public class JREUtils {
         purgeArg(userArgs, "-XX:ActiveProcessorCount");
 
         //Add automatically generated args
-        userArgs.add("-Xms" + LauncherPreferences.PREF_RAM_ALLOCATION + "M");
+        // ELYMON: start with at most 1 GB committed instead of the whole heap (-Xms = -Xmx upstream)
+        userArgs.add("-Xms" + ElymonMemory.initialHeapMb(LauncherPreferences.PREF_RAM_ALLOCATION) + "M");
         userArgs.add("-Xmx" + LauncherPreferences.PREF_RAM_ALLOCATION + "M");
         if(LOCAL_RENDERER != null) userArgs.add("-Dorg.lwjgl.opengl.libname=" + graphicsLib);
 
