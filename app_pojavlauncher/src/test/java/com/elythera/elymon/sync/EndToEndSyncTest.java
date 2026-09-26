@@ -273,7 +273,9 @@ final class EndToEndSyncTest {
         check(!inst("mods/optoff-1.0.jar").exists(), "optional-off mod absent");
         check(inst("mods/opton-1.0.jar").isFile(), "optional-on mod present");
         check(TestSupport.readText(inst("config/fml.toml")).contains("earlyWindowControl = false"), "fml.toml overlay applied");
-        equal(1, res.overlaysApplied, "one overlay applied");
+        equal(2, res.overlaysApplied, "two overlays applied: fml.toml and keybindings.txt");
+        check(TestSupport.readText(inst("config/defaultoptions/keybindings.txt"))
+                .contains("key_key.cobblemon.summary:key.keyboard.m:\n"), "keybindings.txt overlay applied");
         check(!inst("shaderpacks").exists(), "shaderpacks excluded");
         check(!inst("config/defaultoptions/extra").exists(), "tutorial world excluded");
         check(inst("config/empty1.json").isFile() && inst("config/empty1.json").length() == 0

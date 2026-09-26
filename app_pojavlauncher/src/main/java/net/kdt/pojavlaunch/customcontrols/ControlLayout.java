@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.elythera.elymon.controls.ElymonControls;
 import com.google.gson.JsonSyntaxException;
 import com.kdt.pickafile.FileListView;
 import com.kdt.pickafile.FileSelectedListener;
@@ -73,6 +74,8 @@ public class ControlLayout extends FrameLayout {
 		if(layout != null) {
 			loadLayout(layout);
 			updateLoadedFileName(jsonPath);
+			// ELYMON: say once that a new Elymon layout was saved beside the one the player edited
+			ElymonControls.showPendingNotice(getContext());
 			return;
 		}
 
