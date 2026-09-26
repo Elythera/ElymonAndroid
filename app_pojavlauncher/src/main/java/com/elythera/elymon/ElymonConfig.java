@@ -32,6 +32,12 @@ public final class ElymonConfig {
     public static final String INSTANCE_REL = "custom_instances/" + SERVER_ID;
     public static final String GAME_DIR = "amethyst://" + INSTANCE_REL;
 
+    /**
+     * Version the profile points at until a sync reports one: the "id" of the CDN's
+     * pre-processed NeoForge JSON (versions/&lt;id&gt;/&lt;id&gt;.json).
+     */
+    public static final String DEFAULT_VERSION_ID = "neoforge-21.1.249";
+
     /** Brand announced to ElytheraMod (-Delythera.launcher). The server accepts "elythera" by default (badge.acceptedBrands). */
     public static final String LAUNCHER_BRAND = "elythera";
 

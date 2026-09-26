@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Elymon core package: Play flow, Java runtime. French, in the default folder on purpose (DESIGN.md). -->
+<resources>
+    <!-- Progress lines (ProgressLayout) -->
+    <string name="elymon_progress_preparing">Préparation d\'Elymon…</string>
+    <string name="elymon_progress_session">Vérification du compte Microsoft…</string>
+    <string name="elymon_progress_update">Mise à jour d\'Elymon</string>
+    <string name="elymon_progress_waiting">En attente de ta réponse…</string>
+    <string name="elymon_progress_minecraft">Vérification de Minecraft et de Java…</string>
+    <!-- %1$s: current step, %2$s and %3$s: sizes such as "120 Mo" -->
+    <string name="elymon_progress_bytes">%1$s · %2$s / %3$s</string>
+    <string name="elymon_progress_bytes_unknown">%1$s · %2$s</string>
+    <!-- %1$s: number with one decimal -->
+    <string name="elymon_size_mb">%1$s Mo</string>
+    <string name="elymon_size_gb">%1$s Go</string>
+
+    <!-- Download confirmation -->
+    <string name="elymon_confirm_title">Téléchargement d\'Elymon</string>
+    <!-- %1$s: size such as "1,1 Go" -->
+    <string name="elymon_confirm_unmetered">Elymon doit télécharger environ %1$s. Garde l\'application ouverte ou laisse le téléchargement se poursuivre en arrière-plan.</string>
+    <string name="elymon_confirm_metered">Tu utilises une connexion limitée (données mobiles ou partage de connexion). Elymon doit télécharger environ %1$s, ce qui peut entamer ton forfait. Il vaut mieux passer en Wi-Fi.</string>
+    <string name="elymon_confirm_download">Télécharger</string>
+    <string name="elymon_confirm_cancel">Annuler</string>
+
+    <!-- Refusals before the sync -->
+    <string name="elymon_game_running_title">Elymon est déjà lancé</string>
+    <string name="elymon_game_running_message">Le jeu tourne encore en arrière-plan. Reviens-y depuis les applications récentes, ou ferme-le avant de relancer Elymon.</string>
+    <string name="elymon_account_required_title">Compte Microsoft requis</string>
+    <string name="elymon_account_required_message">Elymon se joue avec un compte Microsoft qui possède Minecraft : Java Edition. Ajoute un tel compte, choisis-le, puis réessaie.</string>
+    <string name="elymon_session_failed_title">Connexion impossible</string>
+    <string name="elymon_session_failed_message">Impossible de vérifier ta session Microsoft. Vérifie ta connexion à Internet et réessaie. Si le problème continue, supprime ton compte puis ajoute-le de nouveau.</string>
+
+    <!-- Sync failures -->
+    <string name="elymon_sync_failed_title">Mise à jour impossible</string>
+    <string name="elymon_sync_failed_message">La mise à jour d\'Elymon a échoué. Vérifie ta connexion à Internet et réessaie.</string>
+    <string name="elymon_unexpected_error">Une erreur inattendue a interrompu la préparation d\'Elymon. Réessaie ; si elle revient, copie le détail et envoie-le à l\'équipe Elythera.</string>
+
+    <!-- Gates on the distribution -->
+    <string name="elymon_unavailable_title">Elymon est indisponible</string>
+    <string name="elymon_unavailable_message">Le serveur Elymon est fermé pour le moment. Réessaie plus tard.</string>
+    <string name="elymon_update_required_title">Mise à jour de l\'application requise</string>
+    <string name="elymon_update_required_message">Cette version de l\'application Elymon n\'est plus acceptée par le serveur. Installe la dernière version pour continuer à jouer.</string>
+    <!-- %1$s: installed version, %2$s: required version -->
+    <string name="elymon_update_required_android">Cette version de l\'application Elymon (%1$s) est trop ancienne : le serveur demande au moins la version %2$s. Installe la dernière version pour continuer à jouer.</string>
+
+    <!-- Dialog buttons -->
+    <string name="elymon_ok">OK</string>
+    <string name="elymon_open_page">Ouvrir la page</string>
+    <string name="elymon_copy_details">Copier le détail</string>
+    <string name="elymon_details_copied">Détail copié</string>
+
+    <!-- Notification when the sync ends while no launcher screen is open -->
+    <string name="elymon_notif_ready_title">Elymon est prêt</string>
+    <string name="elymon_notif_ready_text">Ouvre l\'application et appuie sur Jouer pour lancer la partie.</string>
+</resources>

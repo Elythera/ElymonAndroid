@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.elythera.elymon.ElymonProfile;
+
 import net.kdt.pojavlaunch.prefs.LauncherPreferences;
 import net.kdt.pojavlaunch.tasks.AsyncAssetManager;
 
@@ -63,6 +65,9 @@ public class TestStorageActivity extends Activity {
         }
         //Initialize constants (implicitly) and preferences after we confirm that we have storage.
         LauncherPreferences.loadPreferences(this);
+        // ELYMON: select the only (Elymon) profile before any screen reads launcher_profiles.json,
+        // and before unpackSingleFiles would copy upstream's default profile file
+        ElymonProfile.ensureAtStartup(this);
         AsyncAssetManager.unpackComponents(this);
         AsyncAssetManager.unpackSingleFiles(this);
 
