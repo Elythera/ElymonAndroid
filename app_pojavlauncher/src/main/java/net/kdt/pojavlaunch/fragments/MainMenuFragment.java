@@ -71,19 +71,9 @@ public class MainMenuFragment extends Fragment {
         } else mInstallJarButton.setOnClickListener(v -> hasNoOnlineProfileDialog(requireActivity()));
         mEditProfileButton.setOnClickListener(v -> mVersionSpinner.openProfileEditor(requireActivity()));
 
-        mPlayButton.setOnClickListener(v -> {
-            if (Tools.hasMods("sodium") && !(LauncherPreferences.DEFAULT_PREF.getBoolean("sodium_override", false))) {
-                AlertDialog sodiumWarningDialog = new AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.sodium_warning_title)
-                        .setMessage(R.string.sodium_warning_message)
-                        .setNeutralButton(R.string.delete_sodium, (d,w)-> {
-                            Tools.deleteSodiumMods();
-                            ExtraCore.setValue(ExtraConstants.LAUNCH_GAME, true);
-                        })
-                        .create();
-                sodiumWarningDialog.show();
-            } else ExtraCore.setValue(ExtraConstants.LAUNCH_GAME, true);
-        });
+        // ELYMON: no Sodium warning. Elymon ships Sodium by design, and the upstream dialog offered to
+        // delete it (and Iris) from the instance, which the next sync would download again.
+        mPlayButton.setOnClickListener(v -> ExtraCore.setValue(ExtraConstants.LAUNCH_GAME, true));
 
         mShareLogsButton.setOnClickListener((v) -> shareLog(requireContext()));
 
