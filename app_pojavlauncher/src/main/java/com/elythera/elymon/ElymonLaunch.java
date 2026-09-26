@@ -229,18 +229,18 @@ public final class ElymonLaunch {
             // From here on, exactly what upstream's LauncherActivity did.
             String normalizedVersionId = AsyncMinecraftDownloader.normalizeVersionId(profileVersionId);
             JMinecraftVersionList.Version mcVersion = AsyncMinecraftDownloader.getListedVersion(normalizedVersionId);
-            AsyncMinecraftDownloader.DoneListener listener = new ContextAwareDoneListener(activity, normalizedVersionId);
-            if (Tools.isLocalProfile(activity) || !Tools.isOnline(activity)) {
-                // MinecraftDownloader's offline branch does not call the listener when it fails,
-                // so the Elymon line cannot wait for it.
-                ProgressLayout.clearProgress(PROGRESS_KEY);
-            } else {
-                listener = new ReleasingDoneListener(listener);
-            }
-            new MinecraftDownloader().start(activity, mcVersion, normalizedVersionId, listener);
+            // Hand the running task over to MinecraftDownloader's own progress line before
+            // dropping the Elymon one: the task count never reaches zero in between (so a second
+            // tap on Play is still refused), and MinecraftDownloader clears that line itself when
+            // it ends, on every path (online, offline, failure), so Play never stays locked.
+            ProgressLayout.setProgress(ProgressLayout.DOWNLOAD_MINECRAFT, 0, R.string.newdl_starting);
+            ProgressLayout.clearProgress(PROGRESS_KEY);
+            new MinecraftDownloader().start(activity, mcVersion, normalizedVersionId,
+                    new ContextAwareDoneListener(activity, normalizedVersionId));
         } catch (RuntimeException e) {
             Log.e(TAG, "Lancement d'Elymon impossible", e);
             ProgressLayout.clearProgress(PROGRESS_KEY);
+            ProgressLayout.clearProgress(ProgressLayout.DOWNLOAD_MINECRAFT);
             notice(activity.getApplicationContext(), R.string.elymon_sync_failed_title,
                     activity.getString(R.string.elymon_unexpected_error), null, e);
         }
@@ -336,27 +336,6 @@ public final class ElymonLaunch {
             Thread.sleep(1000);
         }
         return false;
-    }
-
-    /** Clears the Elymon progress line once MinecraftDownloader is done, then lets upstream continue. */
-    private static final class ReleasingDoneListener implements AsyncMinecraftDownloader.DoneListener {
-        private final AsyncMinecraftDownloader.DoneListener mDelegate;
-
-        ReleasingDoneListener(AsyncMinecraftDownloader.DoneListener delegate) {
-            mDelegate = delegate;
-        }
-
-        @Override
-        public void onDownloadDone() {
-            ProgressLayout.clearProgress(PROGRESS_KEY);
-            mDelegate.onDownloadDone();
-        }
-
-        @Override
-        public void onDownloadFailed(Throwable throwable) {
-            ProgressLayout.clearProgress(PROGRESS_KEY);
-            mDelegate.onDownloadFailed(throwable);
-        }
     }
 
     /** SyncListener → ProgressLayout, plus the download confirmation. */
