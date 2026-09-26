@@ -275,12 +275,12 @@ public final class ElymonUpdater {
         AlertDialog dialog = showDialog(activity, new AlertDialog.Builder(activity)
                 .setTitle(required ? R.string.elymon_update_mandatory_title : R.string.elymon_update_available_title)
                 .setMessage(message.toString())
-                .setPositiveButton(R.string.elymon_update_install, (d, w) -> startUpdate(activity, manifest))
+                .setPositiveButton(R.string.elymon_update_install, (d, w) -> startUpdate(activity, manifest, required))
                 .setNegativeButton(required ? R.string.elymon_update_close : R.string.elymon_update_later, null));
         sOfferDialog = dialog == null ? null : new WeakReference<>(dialog);
     }
 
-    private static void startUpdate(Activity activity, UpdateManifest manifest) {
+    private static void startUpdate(Activity activity, UpdateManifest manifest, boolean required) {
         Context app = activity.getApplicationContext();
         if (sJob != null) {
             sJob.attach(activity);
@@ -294,7 +294,11 @@ public final class ElymonUpdater {
             showDialog(activity, new AlertDialog.Builder(activity)
                     .setTitle(R.string.elymon_update_unknown_sources_title)
                     .setMessage(R.string.elymon_update_unknown_sources_message)
-                    .setPositiveButton(R.string.elymon_update_open_settings, (d, w) -> openUnknownSourcesSettings(activity))
+                    .setPositiveButton(R.string.elymon_update_open_settings, (d, w) -> {
+                        // The offer waits behind the settings screen: back here, one tap goes on.
+                        offer(activity, manifest, required);
+                        openUnknownSourcesSettings(activity);
+                    })
                     .setNegativeButton(R.string.elymon_update_cancel, null));
             return;
         }
@@ -334,13 +338,19 @@ public final class ElymonUpdater {
         new ElymonNotice(app.getString(R.string.elymon_update_failed_title), app.getString(messageRes), null, null).show();
     }
 
-    /** Deletes downloaded APKs this build already is (or is newer than). */
+    /**
+     * Deletes downloaded APKs this build already is (or is newer than). Partial downloads are
+     * left alone: a download in progress owns them, and the next one starts them over anyway.
+     */
     private static void deleteStaleDownloads(Context app) {
         File[] files = new File(app.getCacheDir(), UPDATE_DIR).listFiles();
         if (files == null) {
             return;
         }
         for (File file : files) {
+            if (file.getName().endsWith(".part")) {
+                continue;
+            }
             int code = versionCodeOf(file.getName());
             if (code <= BuildConfig.VERSION_CODE && !file.delete()) {
                 file.deleteOnExit();
