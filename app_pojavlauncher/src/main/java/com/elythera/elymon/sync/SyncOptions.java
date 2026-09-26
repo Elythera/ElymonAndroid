@@ -10,7 +10,11 @@ public final class SyncOptions {
     public File gameHome;
     /** Tools.DIR_GAME_NEW (.minecraft): versions/ and libraries/ live there. */
     public File minecraftDir;
-    /** Private scratch space for partial downloads and the distribution cache. */
+    /**
+     * Private scratch space: distribution cache (distribution.json and its
+     * ETag), version JSON cache (manifests/) and sync-index.json. Partial
+     * downloads are not kept here but next to their target, as {@code <target>.part}.
+     */
     public File workDir;
     /** Content of assets/elymon/android-policy.json, read by the caller. */
     public String policyJson;
@@ -22,4 +26,13 @@ public final class SyncOptions {
     public int threads = 6;
     /** User-Agent sent to the CDN. */
     public String userAgent = "ElymonAndroid";
+
+    // Added by the sync package.
+
+    /**
+     * Where the French texts come from; null uses the built-in copies, which
+     * equal res/values/elymon_sync_strings.xml. An Android caller may resolve
+     * key k to the string resource "elymon_sync_" + k.
+     */
+    public SyncText.Resolver text;
 }

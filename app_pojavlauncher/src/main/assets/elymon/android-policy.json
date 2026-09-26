@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "about": "Android policy of the Elymon sync (com.elythera.elymon.sync.AndroidPolicy). Phase 0 validated this content on a Galaxy S24 Ultra with 113 of 124 mods.",
+  "excludeMods": [
+    "distanthorizons",
+    "iris",
+    "irisscalefix",
+    "euphoria_patcher",
+    "cobblemon_vocalized",
+    "crash_assistant",
+    "controlify",
+    "c2me",
+    "connector",
+    "swingthrough",
+    "unilib"
+  ],
+  "excludeFilePrefixes": [
+    "shaderpacks/",
+    "config/defaultoptions/extra/saves/",
+    "config/defaultoptions/extra/shaderpacks/",
+    "config/craftpresence.json"
+  ],
+  "overlays": [
+    {
+      "path": "config/fml.toml",
+      "ops": [
+        { "op": "tomlSet", "set": { "earlyWindowControl": "false" } }
+      ]
+    },
+    {
+      "path": "config/defaultoptions/keybindings.txt",
+      "ops": [
+        { "op": "colonKeySet", "set": {} }
+      ]
+    }
+  ],
+  "seedOptions": {
+    "lang": "fr_fr",
+    "renderDistance": "8",
+    "simulationDistance": "6",
+    "maxFps": "60",
+    "graphicsMode": "0",
+    "particles": "1",
+    "mipmapLevels": "2",
+    "biomeBlendRadius": "1",
+    "entityShadows": "false",
+    "renderClouds": "\"false\"",
+    "toggleCrouch": "true",
+    "fullscreen": "false",
+    "enableVsync": "false"
+  }
+}
