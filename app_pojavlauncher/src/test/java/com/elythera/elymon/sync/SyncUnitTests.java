@@ -208,8 +208,10 @@ final class SyncUnitTests {
         Overlay fml = p.overlayFor("config/fml.toml");
         check(fml != null && fml.ops.size() == 1 && "false".equals(fml.ops.get(0).set.get("earlyWindowControl")),
                 "fml.toml overlay sets earlyWindowControl = false");
-        check(p.overlayFor("config/defaultoptions/keybindings.txt") == null,
-                "the keybindings overlay is declared but empty until the controls package fills it");
+        Overlay keys = p.overlayFor("config/defaultoptions/keybindings.txt");
+        check(keys != null && keys.ops.size() == 1 && Overlay.COLON_KEY_SET.equals(keys.ops.get(0).kind)
+                        && "key.keyboard.grave.accent:".equals(keys.ops.get(0).set.get("key_key.ftbchunks.map")),
+                "the keybindings overlay (controls package) moves the FTB Chunks map off M");
         equal(13, p.seedOptions.size(), "seed option count");
         equal("fr_fr", p.seedOptions.get("lang"), "seed lang");
         equal("\"false\"", p.seedOptions.get("renderClouds"), "seed renderClouds keeps its quotes");
