@@ -110,6 +110,10 @@ final class SyncSession {
             for (String w : p.plan.warnings) {
                 result.warnings.add(w);
             }
+            // The parsed distribution (about 20 MB of JSON tree for 6 MB of text)
+            // is not needed past planning: let it go before the long download.
+            p.distribution = null;
+            p.server = null;
 
             List<Planner.Item> items = new ArrayList<Planner.Item>(p.plan.items);
             items.add(p.versionItem);
