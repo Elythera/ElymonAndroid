@@ -1,10 +1,6 @@
 package net.kdt.pojavlaunch;
 
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
-import static net.kdt.pojavlaunch.Tools.getMods;
-import static net.kdt.pojavlaunch.Tools.hasMods;
-import static net.kdt.pojavlaunch.Tools.hasNoOnlineProfileDialog;
-import static net.kdt.pojavlaunch.Tools.isOnline;
 
 import android.Manifest;
 import android.app.NotificationManager;
@@ -30,6 +26,8 @@ import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 
 import com.elythera.elymon.ElymonLaunch;
+import com.elythera.elymon.ui.ElymonMicrophone;
+import com.elythera.elymon.update.ElymonUpdater;
 import com.kdt.mcgui.ProgressLayout;
 import com.kdt.mcgui.mcAccountSpinner;
 
@@ -39,10 +37,7 @@ import net.kdt.pojavlaunch.extra.ExtraCore;
 import net.kdt.pojavlaunch.extra.ExtraListener;
 import net.kdt.pojavlaunch.fragments.MainMenuFragment;
 import net.kdt.pojavlaunch.fragments.MicrosoftLoginFragment;
-import net.kdt.pojavlaunch.fragments.SelectAuthFragment;
-import net.kdt.pojavlaunch.lifecycle.ContextAwareDoneListener;
 import net.kdt.pojavlaunch.lifecycle.ContextExecutor;
-import net.kdt.pojavlaunch.modloaders.LWJGL3ifyUtils;
 import net.kdt.pojavlaunch.modloaders.modpacks.ModloaderInstallTracker;
 import net.kdt.pojavlaunch.modloaders.modpacks.api.CommonApi;
 import net.kdt.pojavlaunch.modloaders.modpacks.api.ModLoader;
@@ -54,13 +49,8 @@ import net.kdt.pojavlaunch.prefs.screens.LauncherPreferenceFragment;
 import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper;
 import net.kdt.pojavlaunch.progresskeeper.TaskCountListener;
 import net.kdt.pojavlaunch.services.ProgressServiceKeeper;
-import net.kdt.pojavlaunch.tasks.AsyncMinecraftDownloader;
 import net.kdt.pojavlaunch.tasks.AsyncVersionList;
-import net.kdt.pojavlaunch.tasks.MinecraftDownloader;
-import net.kdt.pojavlaunch.utils.DateUtils;
 import net.kdt.pojavlaunch.utils.NotificationUtils;
-import net.kdt.pojavlaunch.value.launcherprofiles.LauncherProfiles;
-import net.kdt.pojavlaunch.value.launcherprofiles.MinecraftProfile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -69,10 +59,10 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.util.List;
 import java.util.Locale;
 
-public class LauncherActivity extends BaseActivity {
+// ELYMON: Requester lets the Elymon microphone prompt and settings use this activity's permission launcher
+public class LauncherActivity extends BaseActivity implements ElymonMicrophone.Requester {
     public static final String SETTING_FRAGMENT_TAG = "SETTINGS_FRAGMENT";
 
     public final ActivityResultLauncher<Object> modInstallerLauncher =
@@ -186,6 +176,14 @@ public class LauncherActivity extends BaseActivity {
             return false;
         }
 
+        // ELYMON: before the first Play, explain voice chat and offer the microphone, once:
+        // nothing asked for it before, so Simple Voice Chat said "Microphone non disponible".
+        if(ElymonMicrophone.shouldOfferBeforePlay(this)) {
+            ElymonMicrophone.offerBeforePlay(this, this,
+                    () -> ExtraCore.setValue(ExtraConstants.LAUNCH_GAME, true));
+            return false;
+        }
+
         // ELYMON: Play syncs Elymon from the Elythera distribution, then hands over to
         // MinecraftDownloader as upstream did here. The LWJGL3ify and demo branches do not
         // apply (NeoForge 1.21.1, Microsoft accounts only).
@@ -207,6 +205,8 @@ public class LauncherActivity extends BaseActivity {
     private ActivityResultLauncher<String> mRequestMicrophonePermissionLauncher;
     private WeakReference<Runnable> mRequestNotificationPermissionRunnable;
     private WeakReference<Runnable> mRequestMicrophonePermissionRunnable;
+    // ELYMON: run on any answer to the microphone request (strong reference: nothing else holds it)
+    private Runnable mMicrophoneAnswerRunnable;
 
     @Override
     protected boolean shouldIgnoreNotch() {
@@ -249,11 +249,16 @@ public class LauncherActivity extends BaseActivity {
         mRequestMicrophonePermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 isAllowed -> {
-                    if(!isAllowed) handleNoNotificationPermission();
-                    else {
+                    // ELYMON: a refused microphone is not a refused notification permission (upstream
+                    // called handleNoNotificationPermission() here), and Elymon's callers want the
+                    // answer either way: Play goes on, the settings show the new state.
+                    Runnable onAnswer = mMicrophoneAnswerRunnable;
+                    mMicrophoneAnswerRunnable = null;
+                    if(isAllowed) {
                         Runnable runnable = Tools.getWeakReference(mRequestMicrophonePermissionRunnable);
                         if(runnable != null) runnable.run();
                     }
+                    if(onAnswer != null) onAnswer.run();
                 }
         );
         getWindow().setBackgroundDrawable(null);
@@ -281,6 +286,9 @@ public class LauncherActivity extends BaseActivity {
         mProgressLayout.observe(ProgressLayout.DOWNLOAD_VERSION_LIST);
         // ELYMON: progress of the Elymon sync
         mProgressLayout.observe(ElymonLaunch.PROGRESS_KEY);
+
+        // ELYMON: quiet check for a newer Elymon APK, once per launcher opening (not on rotation)
+        if(savedInstanceState == null) ElymonUpdater.checkOnStartup(this);
     }
 
     @Override
@@ -407,6 +415,14 @@ public class LauncherActivity extends BaseActivity {
             mRequestNotificationPermissionRunnable = new WeakReference<>(onSuccessRunnable);
         }
         mRequestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+    }
+
+    // ELYMON: microphone request whose callback runs on any answer (ElymonMicrophone.Requester)
+    @Override
+    public void requestMicrophonePermission(@NonNull Runnable onAnswer) {
+        mMicrophoneAnswerRunnable = onAnswer;
+        ElymonMicrophone.markRequested(this);
+        mRequestMicrophonePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO);
     }
 
     public void askForMicrophonePermission(Runnable onSuccessRunnable) {
