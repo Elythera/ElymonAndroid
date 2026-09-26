@@ -20,4 +20,27 @@ public final class ServerMeta {
     /** "background": {"image": url}. */
     public String backgroundImage;
     public String iconUrl;
+
+    // Added by the sync package. The fields above keep their meaning; requires*
+    // is the higher of the root and profile floors, the profile winning a tie
+    // (desktop launcherrequirement.js), and unreadable floors are left null.
+
+    /**
+     * "open", "maintenance", "upcoming" or "ended", derived at sync time from
+     * availability.enabled/start/end like the desktop's availability.js.
+     * {@link #available} is true exactly when this is "open".
+     */
+    public String availabilityState = "open";
+    /** Epoch milliseconds of availability.start and availability.end; 0 when absent or unreadable. */
+    public long availabilityStart;
+    public long availabilityEnd;
+
+    /**
+     * Root "maintenance" block (desktop maintenance.js). Active only when the
+     * notice is in force AND the distribution was just fetched from the
+     * network: a notice read from the cache never closes Play.
+     */
+    public boolean maintenanceActive;
+    public String maintenanceMessage;
+    public String maintenanceUrl;
 }
