@@ -103,6 +103,12 @@ public final class ElymonSettings {
      */
     public static void applyLocks() {
         LauncherPreferences.PREF_FORCE_ENGLISH = false;
+        // LocaleUtils reads the stored switch itself when the app starts, before these locks,
+        // and wave-1 builds still showed it: forget a stored "true" so French comes back.
+        SharedPreferences stored = LauncherPreferences.DEFAULT_PREF;
+        if (stored != null && stored.getBoolean("force_english", false)) {
+            stored.edit().remove("force_english").apply();
+        }
         LauncherPreferences.PREF_CHECK_LIBRARY_SHA = true;
         LauncherPreferences.PREF_VERIFY_MANIFEST = true;
         LauncherPreferences.PREF_DOWNLOAD_SOURCE = "default";
