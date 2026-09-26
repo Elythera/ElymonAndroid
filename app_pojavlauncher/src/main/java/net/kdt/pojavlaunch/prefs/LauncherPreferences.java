@@ -14,6 +14,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.elythera.elymon.ElymonMemory;
+import com.elythera.elymon.ui.ElymonSettings;
 
 import net.kdt.pojavlaunch.*;
 import net.kdt.pojavlaunch.multirt.MultiRTUtils;
@@ -122,6 +123,9 @@ public class LauncherPreferences {
         PREF_TOUCHCONTROLLER_VIBRATE_LENGTH = DEFAULT_PREF.getInt("touchControllerVibrateLength", 100);
         PREF_MOUSE_GRAB_FORCE = DEFAULT_PREF.getBoolean("always_grab_mouse", false);
         PREF_KEYBOARD_PANNING = DEFAULT_PREF.getBoolean("keyboardPanning", true);
+        // ELYMON: the settings Elymon hides keep fixed values, whatever an earlier build stored
+        // (before the early return below, which skips the rest when no runtime is installed)
+        ElymonSettings.applyLocks();
 
         // User may have deleted their default control
         String userDefCtrl = DEFAULT_PREF.getString("defaultCtrl", Tools.CTRLDEF_FILE);

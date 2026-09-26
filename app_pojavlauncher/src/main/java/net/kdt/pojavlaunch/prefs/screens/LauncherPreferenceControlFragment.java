@@ -80,6 +80,10 @@ public class LauncherPreferenceControlFragment extends LauncherPreferenceFragmen
         touchControllerVibrateLengthSeek.setValue(touchControllerVibrateLength);
         touchControllerVibrateLengthSeek.setSuffix(" ms");
 
+        // ELYMON: no controller mod and no TouchController mod in Elymon
+        requirePreference("sdl_category").setVisible(false);
+        requirePreference("touchcontroller_category").setVisible(false);
+
         computeVisibility();
     }
 

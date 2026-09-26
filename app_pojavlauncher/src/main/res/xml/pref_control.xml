@@ -173,7 +173,9 @@
 
     </PreferenceCategory>
 
+    <!-- ELYMON: key so that Elymon can hide it (forced SDL is for controller mods, not in Elymon) -->
     <PreferenceCategory
+        android:key="sdl_category"
         android:title="@string/preference_category_SDL_settings">
         <androidx.preference.SwitchPreferenceCompat
             android:defaultValue="false"
@@ -182,7 +184,9 @@
             android:title="@string/mcl_gamepad_forcedSDL"/>
     </PreferenceCategory>
 
+    <!-- ELYMON: key so that Elymon can hide it (Elymon does not ship the TouchController mod) -->
     <PreferenceCategory
+        android:key="touchcontroller_category"
         android:title="@string/preference_category_touchcontroller_settings">
         <SwitchPreference
             android:key="forceEnableTouchController"

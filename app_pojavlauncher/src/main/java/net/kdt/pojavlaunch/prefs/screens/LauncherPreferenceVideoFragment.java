@@ -8,6 +8,8 @@ import androidx.preference.ListPreference;
 import androidx.preference.SwitchPreference;
 import androidx.preference.SwitchPreferenceCompat;
 
+import com.elythera.elymon.ui.ElymonRenderer;
+
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.prefs.CustomSeekBarPreference;
@@ -44,6 +46,8 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
         requirePreference("alternate_surface", SwitchPreferenceCompat.class).setChecked(LauncherPreferences.PREF_USE_ALTERNATE_SURFACE);
         requirePreference("force_vsync", SwitchPreferenceCompat.class).setChecked(LauncherPreferences.PREF_FORCE_VSYNC);
+        // ELYMON: Zink's vsync switch only matters with Kopper Zink, the renderer chosen in the Elymon section
+        requirePreference("vsync_in_zink").setVisible(ElymonRenderer.isZink(requireContext()));
 
         computeVisibility();
     }

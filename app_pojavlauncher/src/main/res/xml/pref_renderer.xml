@@ -29,14 +29,15 @@
             android:summary="@string/mg_renderer_summary_timerQueryExt"
             android:key="mg_renderer_setting_timerQueryExt"
             android:defaultValue="false" />
-        <PreferenceCategory android:title="@string/preference_ANGLE_only">
+        <!-- ELYMON: keys so that Elymon can hide the ANGLE-only and experimental switches -->
+        <PreferenceCategory android:key="mg_angle_category" android:title="@string/preference_ANGLE_only">
             <SwitchPreference
                 android:title="@string/mg_renderer_title_angleDepthClearFixMode"
                 android:summary="@string/mg_renderer_summary_angleDepthClearFixMode"
                 android:key="mg_renderer_setting_angleDepthClearFixMode"
                 android:defaultValue="false" />
         </PreferenceCategory>
-        <PreferenceCategory android:title="@string/preference_experimental_title">
+        <PreferenceCategory android:key="mg_experimental_category" android:title="@string/preference_experimental_title">
             <SwitchPreference
                 android:title="@string/mg_renderer_title_computeShaderext"
                 android:summary="@string/mg_renderer_summary_computeShaderext"
