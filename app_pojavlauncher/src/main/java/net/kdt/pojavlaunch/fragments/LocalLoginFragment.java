@@ -22,6 +22,8 @@ import java.util.regex.Pattern;
 
 public class LocalLoginFragment extends Fragment {
     public static final String TAG = "LOCAL_LOGIN_FRAGMENT";
+    // ELYMON: see onViewCreated.
+    private static final boolean ELYMON_LOCAL_ACCOUNTS_DISABLED = true;
 
     private final Pattern mUsernameValidationPattern;
     private EditText mUsernameEditText;
@@ -33,6 +35,12 @@ public class LocalLoginFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        // ELYMON: local (offline) accounts cannot join Elymon. Nothing opens this screen any more
+        // and nothing listens to MOJANG_LOGIN_TODO; should anything still show it, leave at once.
+        if (ELYMON_LOCAL_ACCOUNTS_DISABLED) {
+            if (!getParentFragmentManager().isStateSaved()) Tools.backToMainMenu(requireActivity());
+            return;
+        }
         // This is overkill but meh
         if (!hasOnlineProfile()){
             Tools.swapFragment(requireActivity(), MainMenuFragment.class, MainMenuFragment.TAG, null);
