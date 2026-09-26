@@ -103,24 +103,24 @@ public final class ControlsHostTests {
 
         File dir = new File(tmp, "controlmap");
         File def = new File(dir, "default.json");
-        LayoutInstaller.Result r = LayoutInstaller.apply(dir, shipped, "1", null, known);
+        LayoutInstaller.Result r = LayoutInstaller.apply(dir, shipped, "1", null, known, false);
         equal(LayoutInstaller.Action.INSTALLED, r.action, "first run installs");
         equal(shippedSha, LayoutInstaller.sha256(def), "first run: default.json is the shipped layout");
         equal(shippedSha, r.installedSha, "first run records the SHA");
 
-        r = LayoutInstaller.apply(dir, shipped, "1", r.installedSha, known);
+        r = LayoutInstaller.apply(dir, shipped, "1", r.installedSha, known, false);
         equal(LayoutInstaller.Action.UP_TO_DATE, r.action, "second run: nothing to do");
 
         write(def, older);
         write(new File(dir, "new_default.json"), older);
-        r = LayoutInstaller.apply(dir, shipped, "1", olderSha, known);
+        r = LayoutInstaller.apply(dir, shipped, "1", olderSha, known, false);
         equal(LayoutInstaller.Action.INSTALLED, r.action, "update over an untouched layout replaces it");
         equal(shippedSha, LayoutInstaller.sha256(def), "update: default.json is the new layout");
         check(!new File(dir, "new_default.json").exists(), "upstream's new_default.json holding one of our layouts is removed");
 
         write(new File(dir, "new_default.json"), edited);
         write(def, edited);
-        r = LayoutInstaller.apply(dir, shipped, "2", olderSha, known);
+        r = LayoutInstaller.apply(dir, shipped, "2", olderSha, known, false);
         equal(LayoutInstaller.Action.KEPT_PLAYER_LAYOUT, r.action, "update over an edited layout keeps it");
         equal(editedSha, LayoutInstaller.sha256(def), "the player's default.json is untouched");
         equal("elymon-2.json", r.alongside, "the new layout is saved beside it");
@@ -129,9 +129,28 @@ public final class ControlsHostTests {
         check(r.installedSha == null, "the remembered SHA stays the one the app wrote");
         check(new File(dir, "new_default.json").exists(), "a new_default.json that is not ours stays");
 
-        r = LayoutInstaller.apply(dir, shipped, "2", olderSha, known);
+        r = LayoutInstaller.apply(dir, shipped, "2", olderSha, known, true);
         check(!r.alongsideCreated, "next start: the alongside file is not rewritten");
         check(!new File(dir, "default.json.elymon-tmp").exists(), "no temporary file left");
+
+        // The editor's save dialog offers the loaded file's name: a player who loaded
+        // elymon-2.json, changed it and saved it under that name keeps their work.
+        byte[] editedAlongside = "{\"version\":8,\"alongside\":\"edited\"}".getBytes(StandardCharsets.UTF_8);
+        write(new File(dir, "elymon-2.json"), editedAlongside);
+        r = LayoutInstaller.apply(dir, shipped, "2", olderSha, known, true);
+        equal(LayoutInstaller.sha256(editedAlongside), LayoutInstaller.sha256(new File(dir, "elymon-2.json")),
+                "an edited elymon-2.json is never replaced");
+        r = LayoutInstaller.apply(dir, shipped, "2", olderSha, known, false);
+        check(!r.alongsideCreated, "not even before the notice was recorded");
+        equal(LayoutInstaller.sha256(editedAlongside), LayoutInstaller.sha256(new File(dir, "elymon-2.json")),
+                "the edited elymon-2.json is still the player's");
+        equal("elymon-2.json", r.alongside, "the notice still names it");
+
+        // Deleted by the player after the notice: not written again.
+        check(new File(dir, "elymon-2.json").delete(), "elymon-2.json deleted");
+        r = LayoutInstaller.apply(dir, shipped, "2", olderSha, known, true);
+        check(!r.alongsideCreated && !new File(dir, "elymon-2.json").exists(),
+                "a deleted alongside file is not written again once the player was told");
     }
 
     // ------------------------------------------------------------------ key bindings

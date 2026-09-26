@@ -149,6 +149,10 @@ At every app start, `AsyncAssetManager.unpackSingleFiles` calls `ElymonControls.
 | a layout an Elymon build installed and nobody edited (SHA-256 recorded at install, or listed in `ElymonControls.LAYOUTS`, which includes upstream Amethyst's layout from the first builds) | replaced |
 | edited by the player | kept; the shipped layout is saved beside it as `elymon-<version>.json`, and the player is told once, in French, when controls next show |
 
+`elymon-<version>.json` is written once:
+- An existing file of that name is never replaced. The editor's save dialog offers the loaded file's name, so that file may hold the player's changes.
+- After the notice, a file the player deleted is not written again.
+
 An upstream `new_default.json` holding one of our layouts is deleted.
 
 ## Changing the layout

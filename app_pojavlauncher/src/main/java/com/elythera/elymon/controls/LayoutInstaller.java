@@ -22,7 +22,8 @@ import java.util.Locale;
  * which include upstream Amethyst's default.json that the first builds installed): it is
  * replaced;</li>
  * <li>otherwise the player edited it: it stays, and the shipped layout is written beside it
- * as elymon-&lt;version&gt;.json, for the player to load when they want.</li>
+ * as elymon-&lt;version&gt;.json, for the player to load when they want (once: an existing
+ * file of that name is never replaced).</li>
  * </ul>
  * Upstream's own step (writing new_default.json when the SHA-1 differs, never replacing
  * anything) is gone; a new_default.json left by it is deleted when it is one of our layouts.
@@ -82,11 +83,17 @@ final class LayoutInstaller {
     /**
      * Applies {@link #decide} to controlDir.
      *
+     * <p>The file beside an edited layout is written once and never replaced: the editor's save
+     * dialog offers the loaded file's name, so a player who loaded elymon-&lt;version&gt;.json,
+     * changed it and saved keeps their work there. It is not written again either once the
+     * player was told about it (alreadyOffered): if it is gone, the player deleted it.
+     *
      * @param asset the shipped default.json
      * @param assetVersion its version in {@link ElymonControls#LAYOUTS}
+     * @param alreadyOffered the player was already told about this version's alongside file
      */
     static Result apply(File controlDir, byte[] asset, String assetVersion, String lastInstalledSha,
-                        Collection<String> pristine) throws IOException {
+                        Collection<String> pristine, boolean alreadyOffered) throws IOException {
         if (!controlDir.isDirectory() && !controlDir.mkdirs()) {
             throw new IOException("cannot create " + controlDir.getName());
         }
@@ -105,7 +112,7 @@ final class LayoutInstaller {
             default:
                 String name = alongsideName(assetVersion);
                 File beside = new File(controlDir, name);
-                boolean create = !beside.isFile() || !assetSha.equals(sha256(beside));
+                boolean create = !beside.exists() && !alreadyOffered;
                 if (create) {
                     writeAtomic(beside, asset);
                 }

@@ -92,14 +92,14 @@ public final class ElymonControls {
         for (String[] layout : LAYOUTS) {
             known.add(layout[1]);
         }
+        boolean offered = version.equals(prefs.getString(PREF_LAYOUT_OFFERED, null));
         LayoutInstaller.Result result = LayoutInstaller.apply(new File(Tools.CTRLMAP_PATH), asset, version,
-                prefs.getString(PREF_LAYOUT_SHA, null), known);
+                prefs.getString(PREF_LAYOUT_SHA, null), known, offered);
         SharedPreferences.Editor editor = prefs.edit();
         if (result.installedSha != null) {
             editor.putString(PREF_LAYOUT_SHA, result.installedSha);
         }
-        if (result.action == LayoutInstaller.Action.KEPT_PLAYER_LAYOUT
-                && !version.equals(prefs.getString(PREF_LAYOUT_OFFERED, null))) {
+        if (result.action == LayoutInstaller.Action.KEPT_PLAYER_LAYOUT && !offered) {
             // told once per shipped layout, the next time a layout is shown
             LayoutInstaller.writeAtomic(noticeFile(app), result.alongside.getBytes(StandardCharsets.UTF_8));
             editor.putString(PREF_LAYOUT_OFFERED, version);
