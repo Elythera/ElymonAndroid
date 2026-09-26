@@ -76,6 +76,11 @@ public final class ElymonUpdater {
     private static final String UPDATE_DIR = "elymon-update";
 
     private static final AtomicBoolean sChecking = new AtomicBoolean(false);
+    /**
+     * The player's own check, apart from the quiet one: a tap on "Vérifier" while the startup
+     * check is still running must still get its answer.
+     */
+    private static final AtomicBoolean sManualChecking = new AtomicBoolean(false);
     /** The running download and install; UI thread only. */
     private static Job sJob;
     /** The offer dialog on screen, so a second check does not stack another one; UI thread only. */
@@ -131,7 +136,7 @@ public final class ElymonUpdater {
         }
         final Context app = activity.getApplicationContext();
         Toast.makeText(app, R.string.elymon_update_checking, Toast.LENGTH_SHORT).show();
-        if (!sChecking.compareAndSet(false, true)) {
+        if (!sManualChecking.compareAndSet(false, true)) {
             return;
         }
         prefs(app).edit().putLong(KEY_LAST_CHECK, System.currentTimeMillis()).apply();
@@ -140,7 +145,7 @@ public final class ElymonUpdater {
             try {
                 result = fetch(app, FEED_TIMEOUT_MS);
             } finally {
-                sChecking.set(false);
+                sManualChecking.set(false);
             }
             final UpdateHttp.FeedResult outcome = result;
             onLauncherScreen(current -> report(current, outcome));
