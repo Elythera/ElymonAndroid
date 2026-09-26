@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -160,11 +161,20 @@ public final class ElymonSettings {
         // Upstream's ceiling (LauncherPreferenceJavaFragment): leave Android at least 1 GB.
         memory.setMaxKeepIncrement(Math.max(totalMb - 1024, ElymonMemory.defaultHeapMb(totalMb)));
         memory.setSuffix(context.getString(R.string.elymon_settings_memory_unit));
-        // Shown without being saved: "allocation" stays unset until the player moves the
-        // slider, so the default keeps following ElymonMemory's tiers.
-        memory.setPersistent(false);
-        memory.setValue(ramAllocation);
-        memory.setPersistent(true);
+        SharedPreferences stored = memory.getSharedPreferences();
+        if (stored != null && stored.contains(KEY_MEMORY)) {
+            // The player chose a value once. Inflating pref_main.xml already clamped it to the
+            // slider's XML maximum, which SeekBarPreference raises to the minimum (1024), and
+            // SAVED that: upstream's "triggers a write" trap. Save the player's value again, or
+            // the next game would start with a 1024 MB heap.
+            memory.setValue(ramAllocation);
+        } else {
+            // Shown without being saved: "allocation" stays unset until the player moves the
+            // slider, so the default keeps following ElymonMemory's tiers.
+            memory.setPersistent(false);
+            memory.setValue(ramAllocation);
+            memory.setPersistent(true);
+        }
         memory.setSummary(context.getString(R.string.elymon_settings_memory_summary,
                 ElymonMemory.defaultHeapMb(totalMb), ElymonMemory.maxSafeHeapMb(totalMb)));
     }
