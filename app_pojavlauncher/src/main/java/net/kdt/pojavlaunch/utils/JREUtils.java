@@ -423,7 +423,8 @@ public class JREUtils {
             }
         }
 
-        if(LauncherPreferences.PREF_ARC_CAPES) {
+        // ELYMON: never load the ARC capes agent: it points cape lookups at a third-party server (23.95.137.176)
+        if(false && LauncherPreferences.PREF_ARC_CAPES) {
             userArgs.add("-javaagent:"+new File(Tools.DIR_DATA,"arc_dns_injector/arc_dns_injector.jar").getAbsolutePath()+"=23.95.137.176");
         }
 

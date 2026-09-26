@@ -243,7 +243,8 @@ android {
         versionCode elymonVersionCode
         versionName elymonVersionName
         multiDexEnabled true //important
-        resValue 'string', 'curseforge_api_key', getCFApiKey()
+        // ELYMON: Elymon has no modpack browser: no CurseForge key is ever embedded, whatever the environment holds
+        resValue 'string', 'curseforge_api_key', 'DUMMY'
         // ELYMON: shared ElytheraMod handshake key ("" when absent), injected like the desktop's prepare-key.cjs
         buildConfigField 'String', 'ELYTHERA_KEY', "\"${elymonKey}\""
         buildConfigField 'boolean', 'ELYTHERA_KEY_PRESENT', elymonKeyPresent ? 'true' : 'false'
