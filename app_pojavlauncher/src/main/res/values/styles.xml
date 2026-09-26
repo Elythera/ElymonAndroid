@@ -8,6 +8,12 @@
         <item name="android:statusBarColor">@color/background_status_bar</item>
         <item name="android:navigationBarColor">@color/background_app</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <!-- ELYMON: Elymon colours (switches, sliders, dialog buttons) instead of AppCompat's
+             teal, and a dark window behind the first frame of every screen -->
+        <item name="colorPrimary">@color/elymon_ink</item>
+        <item name="colorPrimaryDark">@color/elymon_ink</item>
+        <item name="colorAccent">@color/elymon_red</item>
+        <item name="android:windowBackground">@color/background_app</item>
 
         <item name="android:textSize">@dimen/_12ssp</item>
 

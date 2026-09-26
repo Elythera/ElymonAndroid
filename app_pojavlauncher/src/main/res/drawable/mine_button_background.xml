@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!-- ELYMON: Elymon red with a darker lip, drawn as shapes, instead of the purple 9-patches
+     (Amethyst's colour was baked into the bitmaps) -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true" android:drawable="@drawable/mine_button_focused" />
-    <item android:state_enabled="false" android:drawable="@drawable/mine_button_focused" />
-    <item android:drawable="@drawable/mine_button_unfocused" />
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/_6sdp" />
+            <solid android:color="@color/elymon_disabled" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <layer-list>
+            <item android:top="@dimen/_3sdp">
+                <shape android:shape="rectangle">
+                    <corners android:radius="@dimen/_6sdp" />
+                    <solid android:color="@color/elymon_red_pressed" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    <item>
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="@dimen/_6sdp" />
+                    <solid android:color="@color/elymon_red_shadow" />
+                </shape>
+            </item>
+            <item android:bottom="@dimen/_3sdp">
+                <shape android:shape="rectangle">
+                    <corners android:radius="@dimen/_6sdp" />
+                    <solid android:color="@color/elymon_red" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
 </selector>
