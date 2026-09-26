@@ -19,6 +19,12 @@ public class LauncherPreferenceRendererSettingsFragment extends LauncherPreferen
     @Override
     public void onCreatePreferences(Bundle b, String str) {
         addPreferencesFromResource(R.xml.pref_renderer);
+        // ELYMON: keep the GLSL cache and error handling only. Nothing reads the ANGLE list
+        // (the profile's useANGLE decides), and the other switches are for developers.
+        requirePreference("mg_renderer_setting_angle").setVisible(false);
+        requirePreference("mg_renderer_setting_timerQueryExt").setVisible(false);
+        requirePreference("mg_angle_category").setVisible(false);
+        requirePreference("mg_experimental_category").setVisible(false);
         GLSLCachePreference = findPreference("mg_renderer_setting_glsl_cache_size");
         if (GLSLCachePreference != null) {
             GLSLCachePreference.setOnBindEditTextListener((editText) -> {

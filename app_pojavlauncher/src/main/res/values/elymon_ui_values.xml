@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- "Mémoire allouée" slider of the Elymon settings, in MB: every tier of ElymonMemory
+         (2048, 2560, 3072, 4096) is a step; below 1 GB the pack cannot start. -->
+    <integer name="elymon_memory_seekbar_min">1024</integer>
+    <integer name="elymon_memory_seekbar_increment">256</integer>
+</resources>

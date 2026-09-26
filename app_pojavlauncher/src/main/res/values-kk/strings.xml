@@ -11,7 +11,8 @@
     <!-- AlertDialog title -->
     <string name="alerttitle_installmod">Мод орнатқыш таңдау</string>
     <!-- Error messages -->
-    <string name="error_fatal">Amethyst кенет іркілді</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="error_fatal">Elymon кенет іркілді</string>
     <string name="error_no_version">Нұсқа жоқ!</string>
     <string name="error_show_more">Көрсету</string>
     <string name="error_show_less">Жасыру</string>

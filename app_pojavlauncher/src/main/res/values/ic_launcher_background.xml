@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#FFFFFF</color>
+    <!-- ELYMON: sky blue of the Elymon artwork (elymon-background2.png) behind the icon -->
+    <color name="ic_launcher_background">#90C2F0</color>
 </resources>

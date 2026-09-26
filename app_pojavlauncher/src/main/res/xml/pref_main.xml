@@ -9,8 +9,74 @@
 
     <net.kdt.pojavlaunch.prefs.BackButtonPreference/>
 
+    <!-- ELYMON: what an Elymon player needs, first; bound by com.elythera.elymon.ui.ElymonSettings -->
     <PreferenceCategory
-        android:title="@string/preference_category_main_categories"
+        android:key="elymon_category"
+        android:title="@string/elymon_settings_category">
+
+        <androidx.preference.ListPreference
+            android:key="elymon_renderer"
+            android:persistent="false"
+            android:title="@string/elymon_settings_renderer_title"
+            android:dialogTitle="@string/elymon_settings_renderer_title"
+            android:icon="@drawable/ic_setting_engine" />
+
+        <!-- Same key as upstream's Java screen, which Elymon hides -->
+        <net.kdt.pojavlaunch.prefs.CustomSeekBarPreference
+            android:key="allocation"
+            android:title="@string/elymon_settings_memory_title"
+            android:icon="@drawable/ic_setting_ram"
+            app2:showSeekBarValue="true"
+            app2:min="@integer/elymon_memory_seekbar_min"
+            app2:seekBarIncrement="@integer/elymon_memory_seekbar_increment"
+            app2:selectable="false" />
+
+        <Preference
+            android:key="elymon_microphone"
+            android:persistent="false"
+            android:title="@string/elymon_settings_mic_title"
+            android:icon="@drawable/ic_elymon_mic" />
+
+        <Preference
+            android:key="elymon_controls"
+            android:persistent="false"
+            android:title="@string/elymon_settings_controls_title"
+            android:summary="@string/elymon_settings_controls_summary"
+            android:icon="@drawable/ic_menu_custom_controls" />
+
+        <Preference
+            android:key="elymon_game_folder"
+            android:persistent="false"
+            android:title="@string/elymon_settings_folder_title"
+            android:summary="@string/elymon_settings_folder_summary"
+            android:icon="@drawable/ic_folder" />
+
+        <Preference
+            android:key="elymon_send_logs"
+            android:persistent="false"
+            android:title="@string/elymon_settings_logs_title"
+            android:summary="@string/elymon_settings_logs_summary"
+            android:icon="@drawable/ic_elymon_share" />
+
+        <Preference
+            android:key="elymon_check_updates"
+            android:persistent="false"
+            android:title="@string/elymon_settings_update_title"
+            android:icon="@drawable/ic_elymon_update" />
+
+        <Preference
+            android:key="elymon_about"
+            android:persistent="false"
+            android:title="@string/elymon_settings_about_title"
+            android:summary="@string/elymon_settings_about_summary"
+            android:icon="@drawable/ic_elymon_info"
+            android:fragment="com.elythera.elymon.ui.ElymonAboutFragment" />
+    </PreferenceCategory>
+
+    <!-- ELYMON: "Réglages détaillés" instead of the upstream category title; the Java,
+         miscellaneous and experimental screens are hidden in code (ElymonSettings) -->
+    <PreferenceCategory
+        android:title="@string/elymon_settings_other_category"
         >
 
         <Preference

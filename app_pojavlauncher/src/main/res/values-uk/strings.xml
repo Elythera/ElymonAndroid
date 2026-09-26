@@ -13,7 +13,8 @@
     <!-- AlertDialog title -->
     <string name="alerttitle_installmod">Вибрати встановлювач мода</string>
     <!-- Error messages -->
-    <string name="error_fatal">Amethyst був зупинений у результаті збою</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="error_fatal">Elymon був зупинений у результаті збою</string>
     <string name="error_no_version">Немає версії!</string>
     <string name="error_show_more">Розвернути</string>
     <string name="error_show_less">Звернути</string>
@@ -209,7 +210,8 @@
     <string name="arc_capes_title">Плащі Cosmetica</string>
     <string name="arc_capes_desc">Умикає плащі від Cosmetica (раніше Arc). Для більш детальної інформації, будь ласка, відвідайте https://cosmetica.cc. Потребує OptiFine.</string>
     <string name="notif_channel_name">Загальне</string>
-    <string name="lazy_service_default_title">Служба Amethyst</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="lazy_service_default_title">Служба Elymon</string>
     <string name="mcl_setting_veroption_installed">Установлено</string>
     <string name="use_global_default">(Використовувати усталено)</string>
     <string name="default_control">Усталене керування</string>

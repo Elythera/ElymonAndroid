@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Darkens the bottom of the home artwork so Play and the status line stay readable -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:startColor="#0017131C"
+        android:centerColor="#8017131C"
+        android:endColor="@color/elymon_scrim_end" />
+</shape>

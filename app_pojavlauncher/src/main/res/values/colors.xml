@@ -3,13 +3,15 @@
     <color name="control_button_color">#4CC4C4C4</color>
     <color name="control_button_pressed_color">#4D000000</color>
 
-    <color name="minebutton_color">#9649b8</color>
-    <color name="background_app">#181818</color>
+    <!-- ELYMON: Elymon palette from the logo (red, off-white, near-black plum) instead of
+         Amethyst's purple #9649b8 and greys; see elymon_ui_colors.xml -->
+    <color name="minebutton_color">@color/elymon_red</color>
+    <color name="background_app">@color/elymon_ink_dark</color>
     <color name="divider">@color/background_overlay</color>
-    <color name="background_overlay">#464646</color>
-    <color name="background_status_bar">#242424</color>
-    <color name="background_bottom_bar">#232323</color>
+    <color name="background_overlay">#3B3446</color>
+    <color name="background_status_bar">@color/elymon_ink</color>
+    <color name="background_bottom_bar">@color/elymon_ink</color>
 
     <color name="primary_text">#FFFFFF</color>
-    <color name="secondary_text">#B2B2B2</color>
+    <color name="secondary_text">#BAB3C9</color>
 </resources>

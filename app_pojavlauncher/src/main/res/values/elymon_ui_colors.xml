@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Elymon palette, sampled from the logo (elymon-icon.png): red #EF2E3F, its shadow
+     #A42332, off-white #F1EAFF and the near-black plum #201B26 of the outline. -->
+<resources>
+    <color name="elymon_red">#EF2E3F</color>
+    <color name="elymon_red_pressed">#C92737</color>
+    <color name="elymon_red_shadow">#A42332</color>
+    <color name="elymon_white">#F1EAFF</color>
+    <color name="elymon_ink">#201B26</color>
+    <color name="elymon_ink_dark">#17131C</color>
+    <color name="elymon_disabled">#5A5364</color>
+    <!-- Bottom of the home artwork, behind Play and the status line -->
+    <color name="elymon_scrim_end">#E617131C</color>
+</resources>

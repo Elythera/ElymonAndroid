@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.elythera.elymon.ui.ElymonSettings;
+
 import net.kdt.pojavlaunch.LauncherActivity;
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.prefs.LauncherPreferences;
@@ -29,8 +31,12 @@ public class LauncherPreferenceFragment extends PreferenceFragmentCompat impleme
 
     @Override
     public void onCreatePreferences(Bundle b, String str) {
+        // ELYMON: read before inflating, like LauncherPreferenceJavaFragment does for its slider
+        int ramAllocation = LauncherPreferences.PREF_RAM_ALLOCATION;
         addPreferencesFromResource(R.xml.pref_main);
         setupNotificationRequestPreference();
+        // ELYMON: the Elymon section, and the upstream entries Elymon does not use hidden
+        ElymonSettings.bindMain(this, ramAllocation);
     }
 
     private void setupNotificationRequestPreference() {
@@ -59,6 +65,8 @@ public class LauncherPreferenceFragment extends PreferenceFragmentCompat impleme
         super.onResume();
         SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
         if(sharedPreferences != null) sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        // ELYMON: the microphone may have been allowed in Android's settings meanwhile
+        ElymonSettings.refresh(this);
     }
 
     @Override

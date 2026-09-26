@@ -9,7 +9,8 @@
     <string name="warning_remove_account">Et ob hoc remotus!</string>
     <!-- AlertDialog title -->
     <!-- Error messages -->
-    <string name="error_fatal">Amethyst crashed subito</string>
+    <!-- ELYMON: the app is Elymon -->
+    <string name="error_fatal">Elymon crashed subito</string>
     <!-- Toast messages -->
     <!--
     <string name="toast_3">Exit</string>
