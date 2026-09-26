@@ -8,8 +8,9 @@ Writes the same bytes to:
 Usage: tools/elymon/controls/make_layout.py [--check]
   --check  exits 1 when the files on disk differ from what this script generates.
 
-After a change: bump LAYOUT_VERSION in ElymonControls.java and add the new SHA-256 to its
-history (tools/elymon/check-controls.py says which), then run tools/elymon/check-controls.py.
+After a change: add an entry {"<next version>", "<SHA-256>"} at the end of
+ElymonControls.LAYOUTS, never editing an older one (tools/elymon/check-controls.py prints the
+SHA-256 and fails until the last entry matches), then run tools/elymon/test-controls.sh.
 
 Positions are exp4j expressions in pixels, evaluated by ControlData.insertDynamicPos with
 ${screen_width}, ${screen_height}, ${right}, ${bottom}, ${width}, ${height}, ${margin} and
