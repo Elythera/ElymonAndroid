@@ -2,8 +2,10 @@
 <!-- Textes du moteur de synchronisation Elymon (paquet sync).
      Le moteur est en Java pur : il garde une copie de ces textes dans
      com.elythera.elymon.sync.SyncText, sous la clé sans le préfixe « elymon_sync_ ».
-     tools/elymon/test-sync.sh vérifie que les deux copies sont identiques. -->
-<resources>
+     tools/elymon/test-sync.sh vérifie que les deux copies sont identiques.
+     Français dans le dossier par défaut, exprès (DESIGN.md) : rien à traduire. Ces textes
+     se lisent par leur nom (SyncText.Resolver), pas par R.string : lint ne les voit pas utilisés. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation,UnusedResources">
     <string name="elymon_sync_stage_distribution">Récupération de la distribution</string>
     <string name="elymon_sync_stage_prepare">Préparation de l\'installation</string>
     <string name="elymon_sync_stage_verify">Vérification des fichiers</string>
