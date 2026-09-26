@@ -29,6 +29,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 
+import com.elythera.elymon.ElymonLaunch;
 import com.kdt.mcgui.ProgressLayout;
 import com.kdt.mcgui.mcAccountSpinner;
 
@@ -176,88 +177,17 @@ public class LauncherActivity extends BaseActivity {
             return false;
         }
 
-        String selectedProfile = LauncherPreferences.DEFAULT_PREF.getString(LauncherPreferences.PREF_KEY_CURRENT_PROFILE,"");
-        if (LauncherProfiles.mainProfileJson == null || !LauncherProfiles.mainProfileJson.profiles.containsKey(selectedProfile)){
-            Toast.makeText(this, R.string.error_no_version, Toast.LENGTH_LONG).show();
-            return false;
-        }
-        MinecraftProfile prof = LauncherProfiles.mainProfileJson.profiles.get(selectedProfile);
-        if (prof == null || prof.lastVersionId == null || "Unknown".equals(prof.lastVersionId)){
-            Toast.makeText(this, R.string.error_no_version, Toast.LENGTH_LONG).show();
-            return false;
-        }
-
+        // ELYMON: no profile check here: ElymonLaunch writes the only profile itself.
         if(mAccountSpinner.getSelectedAccount() == null){
             Toast.makeText(this, R.string.no_saved_accounts, Toast.LENGTH_LONG).show();
             ExtraCore.setValue(ExtraConstants.SELECT_AUTH_METHOD, true);
             return false;
         }
 
-        // Override whatever version is in use and replace it with lwjgl3ify if needed
-        List<File> lwjgl3ifyJars = getMods("lwjgl3ify-3");
-        if (!lwjgl3ifyJars.isEmpty()) {
-            if (lwjgl3ifyJars.size() > 1) {
-                // "Duplicate LWJGL3ify jars found, cannot launch."
-                Tools.dialogOnUiThread(this, R.string.global_error, R.string.mc_download_failed);
-                return false;
-            }
-
-            File lwjgl3ifyJar = lwjgl3ifyJars.get(0);
-
-            // If the version contains lwjgl3ify, its probably someone who knows what they're doing
-            // so lets leave that alone
-            if (!prof.lastVersionId.toLowerCase().contains("lwjgl3ify")) {
-                try {
-                    prof.lastVersionId = LWJGL3ifyUtils.installJson(lwjgl3ifyJar).id;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                LauncherProfiles.mainProfileJson.profiles.put(selectedProfile, prof);
-                LauncherProfiles.write();
-
-
-            }
-            // We just installed a json, we need internet + online acc to download so we add super
-            // basic detection whether lwjgl3ify assets were downloaded
-            try {
-                String jsonPath = LWJGL3ifyUtils.getJsonPath(LWJGL3ifyUtils.getProfileID(lwjgl3ifyJar));
-                File lwjgl3ifyClientJar = new File(jsonPath.replace(".json", ".jar"));
-                if (!lwjgl3ifyClientJar.exists()){
-                    if (mAccountSpinner.getSelectedAccount().isLocal() || !isOnline(this)){
-                        Tools.dialogOnUiThread(this, R.string.global_error, R.string.mc_download_failed);
-                        return false;
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        String normalizedVersionId = AsyncMinecraftDownloader.normalizeVersionId(prof.lastVersionId);
-        JMinecraftVersionList.Version mcVersion = AsyncMinecraftDownloader.getListedVersion(normalizedVersionId);
-
-        // Do not load when is a modded version or older than minecraft 1.3 on demo account
-        if (mAccountSpinner.getSelectedAccount().isDemo()) {
-            boolean isOlderThan13 = true;
-
-            if (mcVersion != null) {
-                try {
-                    isOlderThan13 = DateUtils.dateBefore(DateUtils.parseReleaseDate(mcVersion.releaseTime), 2012, 6, 22);
-                } catch (ParseException ignored) {}
-            }
-
-            if (isOlderThan13) {
-                hasNoOnlineProfileDialog(this, getString(R.string.global_error), getString(R.string.demo_versions_supported));
-                return false;
-            }
-        }
-
-        new MinecraftDownloader().start(
-                this,
-                mcVersion,
-                normalizedVersionId,
-                new ContextAwareDoneListener(this, normalizedVersionId)
-        );
+        // ELYMON: Play syncs Elymon from the Elythera distribution, then hands over to
+        // MinecraftDownloader as upstream did here. The LWJGL3ify and demo branches do not
+        // apply (NeoForge 1.21.1, Microsoft accounts only).
+        ElymonLaunch.start(this, mAccountSpinner.getSelectedAccount());
         return false;
     };
 
@@ -347,6 +277,8 @@ public class LauncherActivity extends BaseActivity {
         mProgressLayout.observe(ProgressLayout.INSTALL_MODPACK);
         mProgressLayout.observe(ProgressLayout.AUTHENTICATE_MICROSOFT);
         mProgressLayout.observe(ProgressLayout.DOWNLOAD_VERSION_LIST);
+        // ELYMON: progress of the Elymon sync
+        mProgressLayout.observe(ElymonLaunch.PROGRESS_KEY);
     }
 
     @Override

@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.elythera.elymon.ElymonGameArgs;
+import com.elythera.elymon.ElymonMemory;
 import com.oracle.dalvik.*;
 import java.io.*;
 import java.util.*;
@@ -33,6 +35,7 @@ import net.kdt.pojavlaunch.multirt.MultiRTUtils;
 import net.kdt.pojavlaunch.multirt.Runtime;
 import net.kdt.pojavlaunch.plugins.FFmpegPlugin;
 import net.kdt.pojavlaunch.prefs.*;
+import net.kdt.pojavlaunch.value.MinecraftAccount;
 import net.kdt.pojavlaunch.value.launcherprofiles.LauncherProfiles;
 
 import org.lwjgl.glfw.*;
@@ -178,6 +181,12 @@ public class JREUtils {
     }
 
     public static void setJavaEnvironment(Activity activity, String jreHome) throws Throwable {
+        // ELYMON: upstream signature kept for other callers; no account, so no Elythera variables
+        setJavaEnvironment(activity, jreHome, null);
+    }
+
+    // ELYMON: account parameter added for ELYTHERA_UUID
+    public static void setJavaEnvironment(Activity activity, String jreHome, MinecraftAccount account) throws Throwable {
         Map<String, String> envMap = new ArrayMap<>();
         envMap.put("POJAV_NATIVEDIR", NATIVE_LIB_DIR);
         envMap.put("JAVA_HOME", jreHome);
@@ -299,9 +308,14 @@ public class JREUtils {
         envMap.put("DALVIK_JAVAVM", String.valueOf(Tools.getJavaVMPointer()));
 
         readCustomEnv(envMap); // Must be last so it overrides anything the user sets for obvious reasons.
+        // ELYMON: ElytheraMod's signing key and the account UUID, after custom_env.txt so it cannot
+        // override them (desktop processbuilder.js _resolveElytheraEnv). Nothing when no key was compiled in.
+        envMap.putAll(ElymonGameArgs.environment(BuildConfig.ELYTHERA_KEY,
+                account == null ? null : account.profileId));
 
         for (Map.Entry<String, String> env : envMap.entrySet()) {
-            Logger.appendToLog("Added custom env: " + env.getKey() + "=" + env.getValue());
+            // ELYMON: latestlog.txt is shared by players; never write ELYTHERA_* or credential-like values
+            Logger.appendToLog("Added custom env: " + env.getKey() + "=" + ElymonGameArgs.loggableEnvValue(env.getKey(), env.getValue()));
             try {
                 Os.setenv(env.getKey(), env.getValue(), true);
             }catch (NullPointerException exception){
@@ -332,11 +346,17 @@ public class JREUtils {
         }
     }
     public static void launchJavaVM(final AppCompatActivity activity, final Runtime runtime, File gameDirectory, final List<String> JVMArgs, final String userArgsString) throws Throwable {
+        // ELYMON: upstream signature kept for JavaGUILauncherActivity (installers get no Elythera variables)
+        launchJavaVM(activity, runtime, gameDirectory, JVMArgs, userArgsString, null);
+    }
+
+    // ELYMON: account parameter added, passed to setJavaEnvironment for ELYTHERA_UUID
+    public static void launchJavaVM(final AppCompatActivity activity, final Runtime runtime, File gameDirectory, final List<String> JVMArgs, final String userArgsString, final MinecraftAccount account) throws Throwable {
         String runtimeHome = MultiRTUtils.getRuntimeHome(runtime.name).getAbsolutePath();
 
         JREUtils.relocateLibPath(runtime, runtimeHome);
 
-        setJavaEnvironment(activity, runtimeHome);
+        setJavaEnvironment(activity, runtimeHome, account);
         final String graphicsLib = loadGraphicsLibrary();
 
         // Has to run after SDL env vars are set
@@ -370,7 +390,8 @@ public class JREUtils {
         purgeArg(userArgs, "-XX:ActiveProcessorCount");
 
         //Add automatically generated args
-        userArgs.add("-Xms" + LauncherPreferences.PREF_RAM_ALLOCATION + "M");
+        // ELYMON: start with at most 1 GB committed instead of the whole heap (-Xms = -Xmx upstream)
+        userArgs.add("-Xms" + ElymonMemory.initialHeapMb(LauncherPreferences.PREF_RAM_ALLOCATION) + "M");
         userArgs.add("-Xmx" + LauncherPreferences.PREF_RAM_ALLOCATION + "M");
         if(LOCAL_RENDERER != null) userArgs.add("-Dorg.lwjgl.opengl.libname=" + graphicsLib);
 
@@ -407,7 +428,8 @@ public class JREUtils {
 
         userArgs.addAll(JVMArgs);
         activity.runOnUiThread(() -> Toast.makeText(activity, activity.getString(R.string.autoram_info_msg,LauncherPreferences.PREF_RAM_ALLOCATION), Toast.LENGTH_SHORT).show());
-        System.out.println(JVMArgs);
+        // ELYMON: stdout goes to latestlog.txt; mask --accessToken, --uuid and --xuid
+        System.out.println(ElymonGameArgs.redactArgs(JVMArgs));
 
         initJavaRuntime(runtimeHome);
         JREUtils.setupExitMethod(activity.getApplication());
