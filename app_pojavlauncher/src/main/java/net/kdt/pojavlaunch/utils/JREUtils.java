@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.elythera.elymon.ElymonGameArgs;
 import com.elythera.elymon.ElymonMemory;
+import com.elythera.elymon.support.ElymonLogs;
 import com.elythera.elymon.support.LaunchDiagnostics;
 import com.oracle.dalvik.*;
 import java.io.*;
@@ -444,11 +445,15 @@ public class JREUtils {
         final int exitCode = VMLauncher.launchJVM(userArgs.toArray(new String[0]));
         Logger.appendToLog("Java Exit code: " + exitCode);
         if (exitCode != 0) {
+            // ELYMON: "share logs" sends the redacted support zip (game logs and crash report too) instead of the
+            // raw latestlog.txt; it is built on this thread once the dialog closes, before the process exits
+            final boolean[] shareLogs = {false};
             LifecycleAwareAlertDialog.DialogCreator dialogCreator = (dialog, builder)->
                     builder.setMessage(activity.getString(R.string.mcn_exit_title, exitCode))
-                    .setPositiveButton(R.string.main_share_logs, (dialogInterface, which)-> shareLog(activity));
+                    .setPositiveButton(R.string.main_share_logs, (dialogInterface, which)-> shareLogs[0] = true);
 
             LifecycleAwareAlertDialog.haltOnDialog(activity.getLifecycle(), activity, dialogCreator);
+            if (shareLogs[0]) ElymonLogs.shareBlocking(activity); // ELYMON
         }
         Tools.fullyExit();
     }

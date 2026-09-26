@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -91,6 +93,38 @@ public final class ElymonLogs {
             final File result = zip;
             Tools.runOnUiThread(() -> deliver(app, activityRef.get(), result));
         }, "ElymonLogs").start();
+    }
+
+    /**
+     * For the game process's exit dialog, whose thread kills the process right after: builds
+     * the zip on the calling thread (never the UI thread) and returns once the share sheet has
+     * been started on the UI thread.
+     */
+    public static void shareBlocking(Activity activity) {
+        if (activity == null) {
+            return;
+        }
+        final Context app = activity.getApplicationContext();
+        File zip = null;
+        try {
+            zip = build(app);
+        } catch (Throwable t) {
+            Log.w(TAG, "Support zip failed: " + t.getClass().getSimpleName());
+        }
+        final File result = zip;
+        final CountDownLatch started = new CountDownLatch(1);
+        Tools.runOnUiThread(() -> {
+            try {
+                deliver(app, activity, result);
+            } finally {
+                started.countDown();
+            }
+        });
+        try {
+            started.await(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /** Writes the zip and returns it. Worker thread. */
