@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Elymon release package: self-update, support logs, device eligibility. French, in the default
+     folder on purpose (DESIGN.md): every locale, French included, uses these texts. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <!-- Support logs (ElymonLogs) -->
+    <string name="elymon_logs_preparing">Préparation des journaux…</string>
+    <string name="elymon_logs_chooser">Envoyer les journaux d\'Elymon</string>
+    <string name="elymon_logs_subject">Journaux Elymon</string>
+    <!-- %1$s: app version -->
+    <string name="elymon_logs_text">Journaux d\'Elymon %1$s. Les jetons de connexion et la clé Elythera en ont été retirés.</string>
+    <string name="elymon_logs_failed">Impossible de préparer les journaux. Réessaie.</string>
+    <string name="elymon_logs_no_app">Aucune application ne permet d\'envoyer ce fichier.</string>
+</resources>

@@ -130,6 +130,17 @@
             </intent-filter>
         </provider>
 
+        <!-- ELYMON: hands the redacted support zip to the share sheet; paths limited to cache/elymon-logs/ -->
+        <provider
+            android:name="com.elythera.elymon.support.ElymonLogsProvider"
+            android:authorities="${applicationId}.elymon.logs"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/elymon_logs_paths" />
+        </provider>
+
         <service android:name=".services.ProgressService"
             android:foregroundServiceType="dataSync"/>
         <service android:name=".services.GameService" android:process=":game"

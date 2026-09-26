@@ -60,6 +60,13 @@ public final class ElymonLaunch {
     /** Progress key of the Elymon steps; LauncherActivity's ProgressLayout observes it. */
     public static final String PROGRESS_KEY = "elymon_sync";
 
+    /** Private preferences of the Play flow (eligibility warning, last pack synced). */
+    public static final String STATE_PREFS = "elymon_launch";
+    /** Pack version of the last successful sync, for the support logs. */
+    public static final String STATE_PACK_VERSION = "pack_version";
+    /** When that sync ended (epoch ms). */
+    public static final String STATE_PACK_SYNCED_AT = "pack_synced_at";
+
     private static final String TAG = "ElymonLaunch";
     private static final String POLICY_ASSET = "elymon/android-policy.json";
     /** How long a download confirmation waits for a launcher screen before giving up. */
@@ -128,6 +135,7 @@ public final class ElymonLaunch {
             if (result == null || !passesGates(app, result.meta)) {
                 return;
             }
+            rememberPack(app, result);
 
             final String versionId = Tools.isValidString(result.versionId) ? result.versionId : null;
             ProgressLayout.setProgress(PROGRESS_KEY, 100, R.string.elymon_progress_minecraft);
@@ -147,6 +155,16 @@ public final class ElymonLaunch {
                 ProgressLayout.clearProgress(PROGRESS_KEY);
             }
         }
+    }
+
+    /** For the support logs (ElymonLogs' infos.txt): which pack this phone last installed. */
+    private static void rememberPack(Context app, SyncResult result) {
+        String packVersion = result.meta == null ? null : trimmed(result.meta.packVersion);
+        app.getSharedPreferences(STATE_PREFS, Context.MODE_PRIVATE).edit()
+                .putString(STATE_PACK_VERSION, Tools.isValidString(packVersion) ? packVersion : "inconnue")
+                .putLong(STATE_PACK_SYNCED_AT, System.currentTimeMillis())
+                // commit: the launcher process is killed soon after the game starts.
+                .commit();
     }
 
     private static SyncOptions syncOptions(Context app) throws SyncException {
