@@ -10,4 +10,19 @@ public final class SyncResult {
     public long bytesDownloaded;
     public int filesDownloaded;
     public int filesPruned;
+
+    // Added by the sync package.
+
+    /** Files the distribution places after the Android policy (versions, libraries, mods, instance files). */
+    public int filesPlanned;
+    /** Mods placed in mods/ after the Android policy. */
+    public int modsPlanned;
+    /** Files placed without a download: copies of identical content, empty files. */
+    public int filesCopied;
+    /** Overlay edits (re)applied during this run. */
+    public int overlaysApplied;
+    /** True when options.txt was missing or empty and was created by this run. */
+    public boolean optionsSeeded;
+    /** Non-fatal oddities, in English, for the log. They never contain secrets. */
+    public final java.util.List<String> warnings = new java.util.ArrayList<String>();
 }
