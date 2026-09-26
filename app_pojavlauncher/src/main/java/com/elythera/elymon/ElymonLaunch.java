@@ -114,10 +114,13 @@ public final class ElymonLaunch {
             try {
                 ElymonSession.ensureFresh(account);
             } catch (IOException e) {
-                // The message is the auth package's (French, secret-free); not logged here.
+                // The message is the auth package's (French, meant for the player, secret-free:
+                // ElymonAuthException): it says whether to retry or to add the account again.
+                // Not logged here.
                 Log.w(TAG, "Session refresh failed: " + e.getClass().getSimpleName());
-                notice(app, R.string.elymon_session_failed_title,
-                        app.getString(R.string.elymon_session_failed_message), null, e);
+                String message = Tools.isValidString(trimmed(e.getMessage())) ? e.getMessage().trim()
+                        : app.getString(R.string.elymon_session_failed_message);
+                notice(app, R.string.elymon_session_failed_title, message, null, e);
                 return;
             }
 
