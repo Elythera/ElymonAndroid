@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.elythera.elymon.ElymonGameArgs;
 import com.elythera.elymon.ElymonMemory;
+import com.elythera.elymon.support.LaunchDiagnostics;
 import com.oracle.dalvik.*;
 import java.io.*;
 import java.util.*;
@@ -428,8 +429,10 @@ public class JREUtils {
 
         userArgs.addAll(JVMArgs);
         activity.runOnUiThread(() -> Toast.makeText(activity, activity.getString(R.string.autoram_info_msg,LauncherPreferences.PREF_RAM_ALLOCATION), Toast.LENGTH_SHORT).show());
-        // ELYMON: stdout goes to latestlog.txt; mask --accessToken, --uuid and --xuid
-        System.out.println(ElymonGameArgs.redactArgs(JVMArgs));
+        // ELYMON: for support, write to latestlog.txt (not System.out, which logcat cuts at ~4 KB) the
+        // Elythera labels, whether ELYTHERA_KEY reached the environment (never its value), and the whole
+        // argument list redacted (--accessToken, --session, --uuid, --xuid, --clientId, tokens) in lines under 3 KB
+        LaunchDiagnostics.write(userArgs, Tools.isValidString(Os.getenv(ElymonGameArgs.ENV_KEY)), Logger::appendToLog);
 
         initJavaRuntime(runtimeHome);
         JREUtils.setupExitMethod(activity.getApplication());
